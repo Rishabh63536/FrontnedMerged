@@ -1,0 +1,91 @@
+<div class="container py-5">
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h1 class="h2 text-dark fw-bold mb-1">Shipment Orders</h1>
+      <p class="text-muted small mb-0">Track, monitor, and manage your incoming and past supply consignments.</p>
+    </div>
+  </div>
+
+  <div class="bg-white p-2 rounded-3 border d-inline-flex mb-4">
+    <button
+      type="button"
+      class="btn px-4 py-2 fw-semibold border-0 rounded-2 text-nowrap transition-all"
+      [class.btn-primary]="activeTab === 'active'"
+      [class.text-secondary]="activeTab !== 'active'"
+      (click)="activeTab = 'active'"
+    >
+      Active Shipments <span class="badge ms-2" [class.bg-white]="activeTab === 'active'" [class.text-primary]="activeTab === 'active'" [class.bg-light]="activeTab !== 'active'" [class.text-dark]="activeTab !== 'active'">{{ activeOrders.length }}</span>
+    </button>
+    <button
+      type="button"
+      class="btn px-4 py-2 fw-semibold border-0 rounded-2 text-nowrap transition-all"
+      [class.btn-primary]="activeTab === 'past'"
+      [class.text-secondary]="activeTab !== 'past'"
+      (click)="activeTab = 'past'"
+    >
+      Past Archives <span class="badge ms-2" [class.bg-white]="activeTab === 'past'" [class.text-primary]="activeTab === 'past'" [class.bg-light]="activeTab !== 'past'" [class.text-dark]="activeTab !== 'past'">{{ pastOrders.length }}</span>
+    </button>
+  </div>
+
+  @if (loading) {
+    <div class="d-flex flex-column align-items-center justify-content-center py-5">
+      <div class="spinner-border text-primary mb-3" style="width: 2.5rem; height: 2.5rem;" role="status"></div>
+      <span class="text-secondary fw-medium">Retrieving Manifest Records...</span>
+    </div>
+  } @else if (displayedOrders.length === 0) {
+    <div class="card border border-dashed text-center p-5 bg-light rounded-4">
+      <div class="card-body">
+        <p class="text-muted mb-3 fs-5">
+          @if (activeTab === 'active') {
+            No active freight distributions right now.
+          } @else {
+            No archived order histories available.
+          }
+        </p>
+        @if (activeTab === 'active') {
+          <a routerLink="/" class="btn btn-primary px-4 py-2 fw-semibold">
+            Browse Product Inventory
+          </a>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="d-flex flex-column gap-3">
+      @for (order of displayedOrders; track order.id) {
+        <div 
+          class="card border border-light-subtle shadow-sm rounded-3 overflow-hidden position-relative btn text-start p-0 lc-card-hover"
+          (click)="viewOrder(order.id)"
+          style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;"
+        >
+          <div class="card-body p-4">
+            <div class="row align-items-center g-3">
+              <div class="col-12 col-md-5">
+                <span class="text-uppercase text-primary font-monospace small fw-bold tracking-wider d-block mb-1">
+                  ID: #{{ order.id }}
+                </span>
+                <h3 class="h5 text-dark fw-bold mb-1 mb-md-0">{{ order.productNameSnapshot }}</h3>
+              </div>
+              
+              <div class="col-6 col-md-3">
+                <span class="text-muted d-block small text-uppercase fw-semibold" style="font-size: 0.75rem;">Dispatched Qty</span>
+                <span class="fw-bold text-dark">{{ order.quantity }} Units</span>
+              </div>
+              
+              <div class="col-6 col-md-2">
+                <span class="text-muted d-block small text-uppercase fw-semibold" style="font-size: 0.75rem;">Booking Date</span>
+                <span class="text-dark font-monospace fw-medium">{{ order.placedAt | date: 'mediumDate' }}</span>
+              </div>
+
+              <div class="col-12 col-md-2 d-flex flex-md-column align-items-center align-items-md-end justify-content-between gap-2">
+                <span class="h5 fw-bold text-dark mb-0">₹{{ order.totalAmount }}</span>
+                <span class="badge px-3 py-2 rounded-pill font-monospace shadow-sm" [ngClass]="statusBadgeClass(order.status)">
+                  {{ order.status }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

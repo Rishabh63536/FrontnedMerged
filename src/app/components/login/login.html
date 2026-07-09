@@ -1,0 +1,42 @@
+<div class="d-flex align-items-center justify-content-center" style="min-height: 100vh; background-color: var(--lc-canvas);">
+  <div class="card shadow-sm" style="max-width: 420px; width: 100%;">
+    <div class="card-body p-4">
+      <h2 class="text-primary fw-bold text-center mb-1">LogiChain360</h2>
+      <p class="text-secondary text-center mb-4">Sign in to your account</p>
+
+      @if (loginError) {
+        <div class="alert alert-danger py-2" role="alert">{{ loginError }}</div>
+      }
+
+      <form #loginForm="ngForm" (ngSubmit)="login(loginForm)">
+        <div class="mb-3">
+          <label class="form-label">Phone Number</label>
+          <input type="tel" name="phone" class="form-control" ngModel required
+                 pattern="^\+?[0-9]{10,15}$" #phone="ngModel"
+                 [class.is-invalid]="phone.invalid && (phone.touched || phone.dirty)" />
+          @if (phone.invalid && (phone.touched || phone.dirty)) {
+            <div class="invalid-feedback">Invalid phone number format.</div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input type="password" name="password" class="form-control" ngModel required minlength="4"
+                 #password="ngModel"
+                 [class.is-invalid]="password.invalid && (password.touched || password.dirty)" />
+          @if (password.invalid && (password.touched || password.dirty)) {
+            <div class="invalid-feedback">Password must be at least 4 characters.</div>
+          }
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100" [disabled]="loginForm.invalid || submitting">
+          {{ submitting ? 'Signing in…' : 'Sign In' }}
+        </button>
+      </form>
+
+      <p class="text-center text-secondary mt-3 mb-0" style="font-size: 0.9rem;">
+        New customer? <a routerLink="/register">Create an account</a>
+      </p>
+    </div>
+  </div>
+</div>

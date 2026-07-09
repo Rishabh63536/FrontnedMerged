@@ -1,0 +1,99 @@
+<div class="d-flex align-items-center justify-content-center py-5" style="min-height: 100vh; background-color: var(--lc-canvas);">
+  <div class="card shadow-sm" style="max-width: 520px; width: 100%;">
+    <div class="card-body p-4">
+      <h2 class="text-primary fw-bold text-center mb-1">Create your account</h2>
+      <p class="text-secondary text-center mb-4">Register as a LogiChain360 customer</p>
+
+      @if (errorMessage) {
+        <div class="alert alert-danger py-2" role="alert">{{ errorMessage }}</div>
+      }
+
+      <form #registerForm="ngForm" (ngSubmit)="register(registerForm)">
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label">Full Name</label>
+            <input type="text" name="name" class="form-control" ngModel required minlength="2" #name="ngModel"
+                   [class.is-invalid]="name.invalid && (name.touched || name.dirty)" />
+            @if (name.invalid && (name.touched || name.dirty)) {
+              <div class="invalid-feedback">Name must be at least 2 characters.</div>
+            }
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" name="phone" class="form-control" ngModel required
+                   pattern="^\+?[0-9]{10,15}$" #phone="ngModel" placeholder="+1234567890"
+                   [class.is-invalid]="phone.invalid && (phone.touched || phone.dirty)" />
+            @if (phone.invalid && (phone.touched || phone.dirty)) {
+              <div class="invalid-feedback">Invalid phone number format.</div>
+            }
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-control" ngModel email #email="ngModel"
+                   [class.is-invalid]="email.invalid && (email.touched || email.dirty)" />
+            @if (email.invalid && (email.touched || email.dirty)) {
+              <div class="invalid-feedback">Invalid email format.</div>
+            }
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" ngModel required minlength="8"
+                   #password="ngModel"
+                   [class.is-invalid]="password.invalid && (password.touched || password.dirty)" />
+            @if (password.invalid && (password.touched || password.dirty)) {
+              <div class="invalid-feedback">Password must be at least 8 characters.</div>
+            }
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Confirm Password</label>
+            <input type="password" name="confirmPassword" class="form-control" ngModel required
+                   #confirmPassword="ngModel" />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Company Name</label>
+            <input type="text" name="companyName" class="form-control" ngModel required
+                   #companyName="ngModel"
+                   [class.is-invalid]="companyName.invalid && (companyName.touched || companyName.dirty)" />
+            @if (companyName.invalid && (companyName.touched || companyName.dirty)) {
+              <div class="invalid-feedback">Company name is required.</div>
+            }
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">GST Number</label>
+            <input type="text" name="gstNumber" class="form-control" ngModel required
+                   pattern="^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$"
+                   placeholder="29ABCDE1234F1Z5" #gstNumber="ngModel"
+                   [class.is-invalid]="gstNumber.invalid && (gstNumber.touched || gstNumber.dirty)" />
+            @if (gstNumber.invalid && (gstNumber.touched || gstNumber.dirty)) {
+              <div class="invalid-feedback">Must be a valid 15-character GST number.</div>
+            }
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Shipping Address</label>
+            <textarea name="shippingAddress" class="form-control" rows="2" ngModel #shippingAddress="ngModel"></textarea>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Billing Address</label>
+            <textarea name="billingAddress" class="form-control" rows="2" ngModel #billingAddress="ngModel"></textarea>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 mt-4" [disabled]="registerForm.invalid || submitting">
+          {{ submitting ? 'Creating account…' : 'Create Account' }}
+        </button>
+      </form>
+
+      <p class="text-center text-secondary mt-3 mb-0" style="font-size: 0.9rem;">
+        Already have an account? <a routerLink="/login">Sign in</a>
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,27 @@
+<!--
+  This top-level navbar only has Logo + Logout. Each role module should
+  render its OWN nav links (Orders/My Orders/Inventory/etc.) inside its own
+  layout — either a per-role shell component wrapping its children routes,
+  or just inline at the top of each role's own dashboard component, the
+  same way the 4 separate apps already did it internally.
+-->
+<nav class="navbar navbar-expand navbar-lc px-3">
+  <a class="navbar-brand fw-bold" [routerLink]="homeRoute">LogiChain360</a>
+  @if (isLoggedIn) {
+     <div class="d-flex gap-3 align-items-center">
+      @if(UserRole == 'CUSTOMER'){
+        <a class ="nav-link" routerLink ="/customer">Products</a>
+        <a class ="nav-link" routerLink ="/customer/orders">My Orders</a>
+      }
+
+      @if(UserRole == 'WAREHOUSE_MANAGER'){
+        <a class ="nav-link" routerLink ="/warehouse-manager">Dashboard</a>
+        <a class ="nav-link" routerLink ="/warehouse-manager/orders">Orders</a>
+        <a class ="nav-link" routerLink ="/warehouse-manager/returns">Returns</a>
+        <a class ="nav-link" routerLink ="/warehouse-manager/inventory">Inventory</a>
+      }
+    <button class="btn btn-sm btn-outline-light" (click)="logout()">Log out</button>
+     </div>
+  }
+</nav>
+<router-outlet></router-outlet>

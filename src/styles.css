@@ -1,0 +1,108 @@
+/* ── LogiChain360 Cargo Navy theme ──────────────────────────────────
+   Bootstrap is loaded via CDN (see index.html) — we don't recompile its
+   Sass, we override the CSS custom properties it already exposes per
+   component. This keeps things simple (no Sass build step) while still
+   reskinning buttons/badges/nav to match the shared team color system. */
+
+:root {
+  --lc-navy: #16324F;
+  --lc-navy-dark: #0E2338;
+  --lc-teal: #0E7C86;
+  --lc-teal-tint: #E4F3F3;
+  --lc-canvas: #F7F8FA;
+  --lc-border: #E1E5EA;
+  --lc-text-secondary: #5B6472;
+  --lc-text-primary: #1B2430;
+  --lc-success: #1E8E5A;
+  --lc-success-bg: #E6F4EC;
+  --lc-warning: #C9822A;
+  --lc-warning-bg: #FBF0E1;
+  --lc-danger: #B3261E;
+  --lc-danger-bg: #FBEAE9;
+  --lc-info: #2C6E9E;
+  --lc-info-bg: #E8F1F8;
+
+  --bs-link-color: var(--lc-teal);
+  --bs-link-hover-color: var(--lc-navy-dark);
+}
+
+body {
+  background-color: var(--lc-canvas);
+  color: var(--lc-text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Primary button/bg/text -> Cargo Navy */
+.btn-primary {
+  --bs-btn-bg: var(--lc-navy);
+  --bs-btn-border-color: var(--lc-navy);
+  --bs-btn-hover-bg: var(--lc-navy-dark);
+  --bs-btn-hover-border-color: var(--lc-navy-dark);
+  --bs-btn-active-bg: var(--lc-navy-dark);
+  --bs-btn-active-border-color: var(--lc-navy-dark);
+  --bs-btn-disabled-bg: var(--lc-navy);
+  --bs-btn-disabled-border-color: var(--lc-navy);
+}
+.bg-primary { background-color: var(--lc-navy) !important; }
+.text-primary { color: var(--lc-navy) !important; }
+.border-primary { border-color: var(--lc-navy) !important; }
+
+/* Secondary button -> Container Teal */
+.btn-secondary {
+  --bs-btn-bg: var(--lc-teal);
+  --bs-btn-border-color: var(--lc-teal);
+  --bs-btn-hover-bg: #0b636b;
+  --bs-btn-hover-border-color: #0b636b;
+  --bs-btn-active-bg: #0b636b;
+  --bs-btn-active-border-color: #0b636b;
+}
+.bg-teal-tint { background-color: var(--lc-teal-tint) !important; }
+.text-teal { color: var(--lc-teal) !important; }
+
+/* Navbar */
+.navbar-lc {
+  background-color: var(--lc-navy) !important;
+}
+.navbar-lc .navbar-brand,
+.navbar-lc .nav-link {
+  color: #ffffff !important;
+}
+.navbar-lc .nav-link:hover {
+  color: var(--lc-teal-tint) !important;
+}
+
+/* Status badges — map order status -> semantic colors from the shared palette */
+.badge-status-pending, .badge-status-confirmed, .badge-status-assigned, .badge-status-in_transit {
+  background-color: var(--lc-info-bg);
+  color: var(--lc-info);
+}
+.badge-status-delivered, .badge-status-restocked {
+  background-color: var(--lc-success-bg);
+  color: var(--lc-success);
+}
+.badge-status-cancelled, .badge-status-rejected {
+  background-color: var(--lc-danger-bg);
+  color: var(--lc-danger);
+}
+.badge-status-returned {
+  background-color: var(--lc-warning-bg);
+  color: var(--lc-warning);
+}
+.badge-status-pending, .badge-status-confirmed, .badge-status-assigned,
+.badge-status-in_transit, .badge-status-delivered, .badge-status-restocked,
+.badge-status-cancelled, .badge-status-rejected, .badge-status-returned {
+  font-weight: 600;
+  font-size: 0.78rem;
+  padding: 0.4em 0.75em;
+  border-radius: 999px;
+}
+
+/* Reusable product/order card hover lift — subtle, not flashy */
+.lc-card-hover {
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.lc-card-hover:hover {
+  box-shadow: 0 6px 18px rgba(22, 50, 79, 0.12);
+  transform: translateY(-2px);
+  cursor: pointer;
+}

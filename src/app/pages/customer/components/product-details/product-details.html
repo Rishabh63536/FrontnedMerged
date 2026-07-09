@@ -1,0 +1,143 @@
+<div class="container py-5">
+  
+  <nav aria-label="breadcrumb" class="mb-4">
+    <a routerLink="/customer" class="btn btn-link text-decoration-none text-muted fw-semibold p-0 d-inline-flex align-items-center gap-2 small">
+      <span>&larr;</span> Return to Central Materials Catalog
+    </a>
+  </nav>
+
+  @if (loading) {
+    <div class="d-flex flex-column align-items-center justify-content-center py-5">
+      <div class="spinner-border text-primary mb-3" role="status"></div>
+      <span class="text-secondary small">Constructing Inventory Blueprint Specification...</span>
+    </div>
+  } @else if (!product) {
+    <div class="alert alert-danger border-0 shadow-sm rounded-3" role="alert">
+      {{ errorMessage || 'System Failure: Inventory data item could not be compiled from centralized registry.' }}
+    </div>
+  } @else {
+    
+    <div class="row g-4 lg-gap-5">
+      
+      <div class="col-md-7 col-lg-8">
+        <div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm h-100">
+          <div class="mb-4">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace text-uppercase mb-2 px-3 py-1.5 rounded">
+              Verified Wholesale Commodity
+            </span>
+            <h1 class="display-6 text-dark fw-extrabold mb-2" style="letter-spacing: -0.02em;">{{ product.productName }}</h1>
+            <p class="text-muted fs-6 fw-medium mb-0">
+              Contracted Dispatch Node Partner: <span class="text-dark fw-bold">{{ product.vendorCompanyName }}</span>
+            </p>
+          </div>
+
+          <div class="my-4 border-top pt-4">
+            <h4 class="h6 text-uppercase text-secondary tracking-wider fw-bold mb-3" style="font-size: 0.75rem;">Material Manifest Documentation</h4>
+            <div class="p-3 bg-light rounded-3 text-secondary border-start border-primary border-3 fs-6 lh-lg">
+              {{ product.productDescription }}
+            </div>
+          </div>
+
+          <div class="row g-3 pt-3">
+            <div class="col-6 col-sm-4">
+              <div class="p-3 bg-light rounded-3 text-center border">
+                <span class="text-muted d-block small text-uppercase font-sans mb-1" style="font-size: 0.65rem;">Fulfillment Standard</span>
+                <span class="fw-bold text-dark font-monospace small">Bulk Cargo Line</span>
+              </div>
+            </div>
+            <div class="col-6 col-sm-4">
+              <div class="p-3 bg-light rounded-3 text-center border">
+                <span class="text-muted d-block small text-uppercase font-sans mb-1" style="font-size: 0.65rem;">Insurance State</span>
+                <span class="fw-bold text-success font-monospace small">Bonded Escrow</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-5 col-lg-4">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden sticky-top" style="top: 2rem; z-index: 10;">
+          <div class="card-header bg-dark p-4 border-0 text-white">
+            <span class="text-uppercase text-white-50 small tracking-wider font-monospace d-block mb-1" style="font-size: 0.65rem;">Wholesale Rate Matrix</span>
+            <div class="d-flex align-items-baseline gap-1">
+              <span class="h2 font-monospace fw-extrabold text-white mb-0">₹{{ product.productPrice }}</span>
+              <span class="text-white-50 font-medium small">/ Freight Unit</span>
+            </div>
+          </div>
+
+          <div class="card-body p-4 bg-white">
+            @if (errorMessage) {
+              <div class="alert alert-danger py-2 mb-3 text-center small font-medium">{{ errorMessage }}</div>
+            }
+
+            <form #orderForm="ngForm" (ngSubmit)="placeOrder(orderForm)">
+              
+              <div class="mb-4">
+                <label class="form-label text-secondary small fw-bold text-uppercase" style="font-size: 0.75rem;">Allocation Units</label>
+                <div class="input-group input-group-lg">
+                  <input
+                    type="number"
+                    class="form-control font-monospace fw-bold text-center border-end-0 bg-light"
+                    [(ngModel)]="quantity"
+                    name="quantity"
+                    min="1"
+                    required
+                    #quantityField="ngModel"
+                    style="max-width: 120px;"
+                  />
+                  <span class="input-group-text bg-light border-start-0 text-muted small font-monospace">Units</span>
+                </div>
+              </div>
+
+              <div class="p-3 bg-light rounded-3 mb-4 border">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="text-muted small">Estimated Line Item Subtotal</span>
+                  <span class="font-monospace text-dark fw-medium">₹{{ totalPrice }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-2">
+                  <span class="fw-bold text-dark small text-uppercase">Aggregated Billing Projection</span>
+                  <span class="h4 fw-extrabold text-primary font-monospace mb-0">₹{{ totalPrice }}</span>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label text-secondary small fw-bold text-uppercase" style="font-size: 0.75rem;">Terminal Hub Destination Address</label>
+                <textarea
+                  class="form-control"
+                  name="shippingAddress"
+                  rows="3"
+                  ngModel
+                  required
+                  #shippingAddress="ngModel"
+                  [class.is-invalid]="shippingAddress.invalid && (shippingAddress.touched || shippingAddress.dirty)"
+                  placeholder="Ex: Distribution Facility Hub 3, Block C, Industrial Sector 5, Mumbai 400001"
+                  style="font-size: 0.9rem;"
+                ></textarea>
+                @if (shippingAddress.invalid && (shippingAddress.touched || shippingAddress.dirty)) {
+                  <div class="invalid-feedback fw-semibold small">
+                    An operational logistics terminal drop-off routing destination is required.
+                  </div>
+                }
+              </div>
+
+              <button
+                type="submit"
+                class="btn btn-primary btn-lg w-100 py-3 fw-bold rounded-3 tracking-wide shadow text-uppercase fs-6"
+                [disabled]="orderForm.invalid || quantity < 1 || placingOrder"
+              >
+                {{ placingOrder ? 'Processing Supply Pipeline...' : 'Generate Freight Placement' }}
+              </button>
+              
+              <div class="mt-3 p-2.5 bg-warning-subtle rounded-3 text-center border border-warning-subtle">
+                <p class="text-warning-emphasis mb-0 font-medium" style="font-size: 0.78rem; line-height: 1.4;">
+                  <strong>Milestone Escrow Notice:</strong> 50% initial transaction ledger deposit required on immediate step following manifest placement validation.
+                </p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  }
+</div>

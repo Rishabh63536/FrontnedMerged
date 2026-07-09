@@ -1,0 +1,13 @@
+/* nav-tabs buttons need cursor:pointer since they're <button>, not <a> */
+.nav-tabs .nav-link {
+  cursor: pointer;
+  color: var(--lc-text-secondary);
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+}
+.nav-tabs .nav-link.active {
+  color: var(--lc-navy);
+  border-bottom: 2px solid var(--lc-navy);
+  font-weight: 600;
+}
