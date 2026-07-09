@@ -1,0 +1,103 @@
+<div class="container-fluid p-0">
+  
+  <header class="mb-5">
+    <h2 class="text-dark fw-bold mb-1 tracking-tight" style="letter-spacing: -0.5px;">Welcome, {{ adminName }}</h2>
+    <p class="text-muted small text-uppercase mb-0" style="letter-spacing: 1px; font-size: 0.72rem;">Platform overview</p>
+  </header>
+
+  <div class="row g-4 mb-4">
+    
+    <div class="col-sm-6 col-xl-3">
+      <a routerLink="/admin/orders" class="text-decoration-none d-block h-100">
+        <div class="card border-dark rounded-0 bg-white h-100">
+          <div class="card-body p-4 d-flex flex-column justify-content-between">
+            <p class="text-muted small mb-3 text-uppercase fw-semibold" style="letter-spacing: 0.5px; font-size: 0.7rem;">
+              Total Orders
+            </p>
+            <p class="display-6 fw-bold text-dark mb-0 tracking-tight">{{ totalOrders }}</p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+      <a routerLink="/admin/orders" class="text-decoration-none d-block h-100">
+        <div class="card border-dark rounded-0 h-100"
+             [style.background-color]="pendingReturnsCount > 0 ? '#fff5f5' : '#ffffff'">
+          <div class="card-body p-4 d-flex flex-column justify-content-between">
+            <p class="text-muted small mb-3 text-uppercase fw-semibold" style="letter-spacing: 0.5px; font-size: 0.7rem;">
+              Pending Returns
+            </p>
+            <p class="display-6 fw-bold mb-0 tracking-tight" 
+               [class.text-danger]="pendingReturnsCount > 0" 
+               [class.text-dark]="pendingReturnsCount === 0">
+              {{ pendingReturnsCount }}
+            </p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+      <a routerLink="/admin/warehouses" class="text-decoration-none d-block h-100">
+        <div class="card border-dark rounded-0 h-100"
+             [style.background-color]="unassignedWarehousesCount > 0 ? '#fff5f5' : '#ffffff'">
+          <div class="card-body p-4 d-flex flex-column justify-content-between">
+            <p class="text-muted small mb-3 text-uppercase fw-semibold" style="letter-spacing: 0.5px; font-size: 0.7rem;">
+              Unassigned Warehouses
+            </p>
+            <p class="display-6 fw-bold mb-0 tracking-tight"
+               [class.text-danger]="unassignedWarehousesCount > 0"
+               [class.text-dark]="unassignedWarehousesCount === 0">
+              {{ unassignedWarehousesCount }}
+            </p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+      <a routerLink="/admin/warehouses" class="text-decoration-none d-block h-100">
+        <div class="card border-dark rounded-0 h-100"
+             [style.background-color]="unassignedManagersCount > 0 ? '#fff5f5' : '#ffffff'">
+          <div class="card-body p-4 d-flex flex-column justify-content-between">
+            <p class="text-muted small mb-3 text-uppercase fw-semibold" style="letter-spacing: 0.5px; font-size: 0.7rem;">
+              Unassigned Managers
+            </p>
+            <p class="display-6 fw-bold mb-0 tracking-tight"
+               [class.text-danger]="unassignedManagersCount > 0"
+               [class.text-dark]="unassignedManagersCount === 0">
+              {{ unassignedManagersCount }}
+            </p>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    
+    <div class="col-md-6">
+      <a routerLink="/admin/create-user" class="text-decoration-none d-block h-100">
+        <div class="card border-dark rounded-0 bg-white h-100">
+          <div class="card-body p-4 p-md-5">
+            <h3 class="h5 fw-bold text-dark mb-2 tracking-tight">Create User</h3>
+            <p class="text-muted small mb-0" style="line-height: 1.5;">Add a Vendor, Driver, or Warehouse Manager record to system nodes.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    
+    <div class="col-md-6">
+      <a routerLink="/admin/manage-users" class="text-decoration-none d-block h-100">
+        <div class="card border-dark rounded-0 bg-white h-100">
+          <div class="card-body p-4 p-md-5">
+            <h3 class="h5 fw-bold text-dark mb-2 tracking-tight">Manage Users</h3>
+            <p class="text-muted small mb-0" style="line-height: 1.5;">Modify profile settings, toggle states, or deactivate existing accounts.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    
+  </div>
+</div>

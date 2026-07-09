@@ -1,11 +1,19 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login';
 import { roleGuard } from './core/guards/role-guard';
-import { ProductDetailsComponent } from './pages/customer/components/product-details/product-details';
-import { MyOrdersComponent } from './pages/customer/components/my-orders/my-orders';
-import { OrderDetailComponent } from './pages/customer/components/order-detail/order-detail';
-import { LandingPage } from './pages/customer/components/landing-page/landing-page';
-import { RegisterComponent } from './pages/customer/components/register/register';
+import { ProductDetailsComponent } from './pages/Customer/components/product-details/product-details';
+import { MyOrdersComponent } from './pages/Customer/components/my-orders/my-orders';
+import { OrderDetailComponent } from './pages/Customer/components/order-detail/order-detail';
+import { LandingPage } from './pages/Customer/components/landing-page/landing-page';
+import { RegisterComponent } from './pages/Customer/components/register/register';
+import { DashboardComponent } from './pages/Admin/components/dashboard/dashboard';
+import { OrdersComponent } from './pages/Admin/components/orders/orders';
+import { ReturnsComponent } from './pages/Admin/components/returns/returns';
+import { WarehousesComponent } from './pages/Admin/components/warehouses/warehouses';
+import { CreateUserComponent } from './pages/Admin/components/create-user/create-user';
+import { ManageUsersComponent } from './pages/Admin/components/manage-users/manage-users';
+import { ProductsComponent } from './pages/Admin/components/products/products';
+import { AdminShellComponent } from './pages/Admin/components/admin-shell/admin-shell';
 
 // Pattern for every role section:
 //   {
@@ -42,6 +50,20 @@ export const routes: Routes = [
       { path: 'orders', component: MyOrdersComponent },
       { path: 'orders/:id', component: OrderDetailComponent },
     ] },
+
+    { path: 'admin', component:AdminShellComponent, canActivate: [roleGuard], data: { roles: ['ADMIN'] }, children: [
+      {path:'', component: DashboardComponent, pathMatch:'full'},
+      {path:'orders', component: OrdersComponent},
+      {path: 'returns', component: ReturnsComponent},
+      {path: 'warehouses', component:  WarehousesComponent},
+      {path: 'create-user', component: CreateUserComponent},
+      {path: 'manage-users', component: ManageUsersComponent},
+      {path: 'products', component: ProductsComponent}
+    ] },
+
+
+
+    
   // { path: 'warehouse-manager', canActivate: [roleGuard], data: { roles: ['WAREHOUSE_MANAGER'] }, children: [...] },
   // { path: 'vendor', canActivate: [roleGuard], data: { roles: ['VENDOR'] }, children: [...] },
   // { path: 'driver', canActivate: [roleGuard], data: { roles: ['DRIVER'] }, children: [...] },

@@ -1,0 +1,134 @@
+<div class="container-fluid p-0">
+  
+  <header class="mb-5">
+    <h2 class="text-dark fw-bold mb-1 tracking-tight" style="letter-spacing: -0.5px;">All Orders</h2>
+    <p class="text-muted small text-uppercase mb-0" style="letter-spacing: 1px; font-size: 0.72rem;">
+      Platform-wide order oversight. Cancellation restores stock and frees any assigned driver.
+    </p>
+  </header>
+
+  @if (successMessage) {
+    <div class="alert alert-success border-dark rounded-0 text-uppercase font-monospace small py-3 mb-4" style="letter-spacing: 0.5px; font-size: 0.72rem;">
+      ✓ {{ successMessage }}
+    </div>
+  }
+  @if (errorMessage) {
+    <div class="alert alert-danger border-dark rounded-0 text-uppercase font-monospace small py-3 mb-4" style="letter-spacing: 0.5px; font-size: 0.72rem;">
+      ⚠️ {{ errorMessage }}
+    </div>
+  }
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card border-dark rounded-0 bg-white shadow-none">
+        
+        <div class="card-header bg-white border-bottom border-dark p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+          <h3 class="h5 fw-bold text-dark mb-0 tracking-tight">Order Execution Log</h3>
+          
+          <div class="d-flex align-items-center gap-2">
+            <label for="filterStatus" class="text-muted small text-uppercase fw-semibold mb-0" style="font-size: 0.68rem; letter-spacing: 0.5px;">Filter:</label>
+            <select id="filterStatus"
+                    class="form-select form-select-sm border-dark rounded-0 bg-white text-dark font-monospace" 
+                    style="max-width: 240px; font-size: 0.75rem; height: 31px;"
+                    [(ngModel)]="filterStatus" 
+                    name="filterStatus">
+              <option value="ALL">ALL STATUSES</option>
+              <option value="PENDING">PENDING</option>
+              <option value="CONFIRMED">CONFIRMED</option>
+              <option value="ASSIGNED">ASSIGNED</option>
+              <option value="IN_TRANSIT">IN TRANSIT</option>
+              <option value="DELIVERED">DELIVERED</option>
+              <option value="CANCELLED">CANCELLED</option>
+              <option value="RETURNED">RETURNED</option>
+            </select>
+          </div>
+        </div>
+
+        @if (loading) {
+          <div class="d-flex flex-column justify-content-center align-items-center py-5 gap-2 bg-white">
+            <div class="spinner-border text-dark rounded-0" role="status" style="width: 1.5rem; height: 1.5rem; border-width: 0.2em;">
+              <span class="visually-hidden">Loading…</span>
+            </div>
+            <span class="text-muted font-monospace text-uppercase" style="font-size: 0.65rem; letter-spacing: 1px;">Polling Ledger Core...</span>
+          </div>
+        } 
+        
+        @else if (filteredOrders.length === 0) {
+          <div class="text-center py-5 text-muted small font-monospace bg-white border-0 m-0">
+            No tracked transactions match this structural pipeline sequence filter.
+          </div>
+        } 
+        
+        @else {
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 rounded-0">
+              <thead class="table-light text-uppercase small fw-semibold" style="font-size: 0.72rem; letter-spacing: 0.5px;">
+                <tr>
+                  <th class="border-bottom border-dark ps-4 py-3">Order Ref</th>
+                  <th class="border-bottom border-dark py-3">Customer</th>
+                  <th class="border-bottom border-dark py-3">Product</th>
+                  <th class="border-bottom border-dark py-3">Warehouse</th>
+                  <th class="border-bottom border-dark py-3">Total Cost</th>
+                  <th class="border-bottom border-dark py-3">Status</th>
+                  <th class="border-bottom border-dark pe-4 text-end py-3">Action Operations</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (order of filteredOrders; track order.id) {
+                  <tr class="bg-white">
+                    <td class="ps-4 py-3 font-monospace text-dark fw-bold">
+                      #{{ order.id }}
+                    </td>
+                    
+                    <td class="py-3 text-dark fw-semibold">
+                      {{ order.customerName }}
+                    </td>
+                    
+                    <td class="py-3 text-secondary small">
+                      {{ order.productNameSnapshot }}
+                      <span class="badge bg-light border border-dark text-dark font-monospace rounded-0 d-inline-block ms-1" style="font-size: 0.65rem;">
+                        x{{ order.quantity }}
+                      </span>
+                    </td>
+                    
+                    <td class="py-3">
+                      <span class="badge bg-dark rounded-0 text-white font-monospace text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.5px;">
+                        {{ order.warehouseCode }}
+                      </span>
+                    </td>
+                    
+                    <td class="py-3 text-dark fw-bold">
+                      ₹{{ order.totalAmount }}
+                    </td>
+                    
+                    <td class="py-3">
+                      <span class="badge rounded-0 text-uppercase font-monospace px-2 py-1" 
+                            [ngClass]="statusBadgeClass(order.status)"
+                            style="font-size: 0.65rem; letter-spacing: 0.5px;">
+                        {{ order.status }}
+                      </span>
+                    </td>
+                    
+                    <td class="pe-4 text-end py-3">
+                      @if (isCancellable(order)) {
+                        <button class="btn btn-sm btn-outline-danger rounded-0 text-uppercase font-monospace fw-semibold px-2" 
+                                style="font-size: 0.68rem; letter-spacing: 0.5px; transition: none;"
+                                (click)="cancelOrder(order.id)">
+                          Cancel Order
+                        </button>
+                      } @else {
+                        <span class="text-muted small font-monospace" style="font-size: 0.7rem;">—</span>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+
+      </div>
+    </div>
+  </div>
+
+</div>

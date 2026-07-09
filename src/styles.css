@@ -106,3 +106,58 @@ body {
   transform: translateY(-2px);
   cursor: pointer;
 }
+
+
+
+/* ── Admin sidebar theme — append this block to the end of the unified
+   project's existing src/styles.css. These classes are only used by
+   AdminShellComponent, so they don't affect Customer/WM's existing look. ── */
+
+.lc-sidebar {
+  background-color: var(--lc-navy-dark) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+.lc-sidebar .navbar-brand {
+  color: #ffffff !important;
+}
+.lc-sidebar hr {
+  color: #ffffff !important;
+  opacity: 0.15;
+}
+.nav-link-minimal {
+  color: var(--lc-teal-tint) !important;
+  background-color: transparent;
+  opacity: 0.85;
+  transition: background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+.nav-link-minimal:hover {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  color: #ffffff !important;
+  opacity: 1;
+}
+.nav-link-minimal.active-teal {
+  background-color: var(--lc-teal) !important;
+  color: #ffffff !important;
+  opacity: 1;
+}
+.lc-btn-logout {
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--lc-teal-tint);
+  transition: all 0.15s ease;
+}
+.lc-btn-logout:hover {
+  background-color: #ffffff;
+  color: var(--lc-navy-dark);
+  border-color: #ffffff;
+}
+nav::-webkit-scrollbar {
+  width: 4px;
+}
+nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 0px;
+}

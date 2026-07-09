@@ -1,0 +1,84 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card border-dark rounded-0 bg-white">
+      
+      <div class="card-header bg-white border-bottom border-dark p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <h3 class="h5 fw-bold text-dark mb-0 tracking-tight">Product Inventory</h3>
+        
+        <div class="d-flex align-items-center gap-2">
+          <label for="warehouseFilter" class="text-muted small text-uppercase fw-semibold mb-0" style="font-size: 0.68rem; letter-spacing: 0.5px;">Filter:</label>
+          <select id="warehouseFilter" 
+                  class="form-select form-select-sm border-dark rounded-0 bg-white text-dark font-monospace" 
+                  style="max-width: 260px; font-size: 0.75rem;"
+                  (change)="onWarehouseChange($event)">
+            <option value="all">ALL WAREHOUSES</option>
+            <option *ngFor="let wh of warehousesList" [value]="wh.id">
+              {{ wh.code }} — {{ wh.location }}
+            </option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 rounded-0">
+          <thead class="table-light text-uppercase small fw-semibold" style="font-size: 0.72rem; letter-spacing: 0.5px;">
+            <tr>
+              <th class="border-bottom border-dark ps-4 py-3">Product Info</th>
+              <th class="border-bottom border-dark py-3">Price</th>
+              <th class="border-bottom border-dark py-3">Vendor</th>
+              <th class="border-bottom border-dark py-3">Warehouse Location</th>
+              <th class="border-bottom border-dark py-3" style="width: 200px;">Current Stock Level</th>
+              <th class="border-bottom border-dark pe-4 text-end py-3">Status Alert</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let prod of filteredProducts">
+              <td class="ps-4 py-3 text-dark fw-semibold">
+                {{ prod.productName }}
+                <span class="text-muted d-block font-monospace small fw-normal">SKU: #{{ prod.productId }}</span>
+              </td>
+              <td class="text-dark py-3 fw-medium">{{ prod.productPrice | currency:'INR'}}</td>
+              <td class="py-3 text-secondary small">
+                {{ prod.vendorCompanyName }}
+                <span class="text-muted d-block">ID: {{ prod.vendorId }}</span>
+              </td>
+              <td class="py-3 text-secondary small">
+                {{ prod.warehouseLocation }}
+                <span class="badge bg-dark rounded-0 text-white font-monospace d-inline-block ms-1" style="font-size: 0.65rem;">{{ prod.warehouseCode }}</span>
+              </td>
+              <td class="py-3">
+                <div class="d-flex justify-content-between align-items-center mb-1 text-muted extra-small" style="font-size: 0.7rem;">
+                  <span>{{ prod.stock }} / {{ prod.maxStock }} pcs</span>
+                  <span class="fw-bold">{{ prod.currentStockPercent }}%</span>
+                </div>
+                <div class="progress rounded-0" style="height: 5px;">
+                  <div class="progress-bar" 
+                       role="progressbar" 
+                       [style.width.%]="prod.currentStockPercent"
+                       [class.bg-danger]="prod.belowRol"
+                       [class.bg-success]="!prod.belowRol">
+                  </div>
+                </div>
+              </td>
+              <td class="pe-4 text-end py-3">
+                <span *ngIf="prod.belowRol" class="badge bg-danger text-uppercase font-monospace rounded-0 px-2 py-1" style="font-size: 0.65rem; letter-spacing: 0.5px;">
+                  Critical Reorder
+                </span>
+                <span *ngIf="!prod.belowRol" class="badge bg-light border border-dark text-dark text-uppercase font-monospace rounded-0 px-2 py-1" style="font-size: 0.65rem; letter-spacing: 0.5px;">
+                  Stable
+                </span>
+              </td>
+            </tr>
+            
+            <tr *ngIf="!filteredProducts || filteredProducts.length === 0">
+              <td colspan="6" class="text-center py-5 text-muted small">
+                No active product items resolved inside this inventory target segment.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>

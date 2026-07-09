@@ -1,0 +1,138 @@
+<div class="container-fluid p-0 mx-auto" style="max-width: 1000px;">
+  
+  <header class="d-flex flex-sm-row flex-column justify-content-between align-items-start gap-3 mb-5">
+    <div>
+      <h2 class="text-dark fw-bold mb-1 tracking-tight" style="letter-spacing: -0.5px;">Warehouses</h2>
+      <p class="text-muted small text-uppercase mb-0" style="letter-spacing: 1px; font-size: 0.72rem;">Manage warehouses and their assigned managers</p>
+    </div>
+    <button class="btn btn-dark rounded-0 px-3 py-2 text-uppercase fw-bold small" 
+            style="letter-spacing: 0.5px; font-size: 0.75rem;" (click)="toggleCreateForm()">
+      {{ showCreateForm ? 'Cancel' : '+ New Warehouse' }}
+    </button>
+  </header>
+
+  @if (successMessage) { 
+    <div class="alert alert-success rounded-0 small py-2 mb-4 border-0 border-start border-3 border-success bg-white text-success">
+      {{ successMessage }}
+    </div> 
+  }
+  @if (errorMessage) { 
+    <div class="alert alert-danger rounded-0 small py-2 mb-4 border-0 border-start border-3 border-danger bg-white text-danger">
+      {{ errorMessage }}
+    </div> 
+  }
+
+  @if (showCreateForm) {
+    <div class="card border-dark rounded-0 bg-white mb-5">
+      <div class="card-body p-4">
+        <form #createForm="ngForm" (ngSubmit)="createWarehouse(createForm)" autocomplete="off">
+          <div class="row g-4">
+            <div class="col-md-4">
+              <label class="form-label small text-uppercase text-dark fw-semibold" style="letter-spacing: 0.5px;">Warehouse Code</label>
+              <input type="text" name="warehouseCode" class="form-control rounded-0 border-dark shadow-none py-2" ngModel required placeholder="WH-BLR-02" />
+            </div>
+            <div class="col-md-5">
+              <label class="form-label small text-uppercase text-dark fw-semibold" style="letter-spacing: 0.5px;">Location</label>
+              <input type="text" name="location" class="form-control rounded-0 border-dark shadow-none py-2" ngModel required placeholder="Bangalore" />
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small text-uppercase text-dark fw-semibold" style="letter-spacing: 0.5px;">Capacity</label>
+              <input type="number" name="capacity" class="form-control rounded-0 border-dark shadow-none py-2" ngModel required min="1" />
+            </div>
+          </div>
+          <button type="submit" class="btn btn-dark rounded-0 mt-4 px-4 py-2.5 text-uppercase fw-bold small" 
+                  style="letter-spacing: 0.5px; font-size: 0.75rem;" [disabled]="createForm.invalid">Create</button>
+        </form>
+      </div>
+    </div>
+  }
+
+  @if (loading) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-dark" role="status"><span class="visually-hidden">Loading…</span></div>
+    </div>
+  } @else if (warehouses.length === 0) {
+    <div class="alert alert-light border border-dark rounded-0 text-center py-4 small text-uppercase tracking-wide text-muted bg-white">
+      No warehouses cataloged in the system nodes.
+    </div>
+  } @else {
+    <div class="d-flex flex-column gap-3">
+      @for (wh of warehouses; track wh.id) {
+        <div class="card border-dark rounded-0 bg-white">
+          <div class="card-body p-4">
+            
+            @if (editingWarehouseId === wh.id) {
+              <form #editForm="ngForm" (ngSubmit)="saveEdit(wh.id, editForm)" autocomplete="off">
+                <div class="row g-3 align-items-end">
+                  <div class="col-md-3">
+                    <label class="form-label small text-uppercase text-dark fw-semibold" style="letter-spacing: 0.5px;">Code</label>
+                    <input type="text" name="warehouseCode" class="form-control rounded-0 border-dark shadow-none py-2" [ngModel]="wh.warehouseCode" required />
+                  </div>
+                  <div class="col-md-4">
+                    <label class="form-label small text-uppercase text-dark fw-semibold" style="letter-spacing: 0.5px;">Location</label>
+                    <input type="text" name="location" class="form-control rounded-0 border-dark shadow-none py-2" [ngModel]="wh.location" required />
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label small text-uppercase text-dark fw-semibold" style="letter-spacing: 0.5px;">Capacity</label>
+                    <input type="number" name="capacity" class="form-control rounded-0 border-dark shadow-none py-2" [ngModel]="wh.capacity" required />
+                  </div>
+                  <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-dark rounded-0 px-3 py-2 text-uppercase fw-bold small flex-grow-1" style="font-size: 0.72rem;">Save</button>
+                    <button type="button" class="btn btn-outline-dark rounded-0 px-3 py-2 text-uppercase fw-bold small flex-grow-1" style="font-size: 0.72rem;" (click)="toggleEdit(wh.id)">Cancel</button>
+                  </div>
+                </div>
+              </form>
+            } @else {
+              
+              <div class="d-flex flex-md-row flex-column justify-content-between align-items-md-start gap-3">
+                <div>
+                  <h3 class="h5 fw-bold text-dark mb-2 tracking-tight" style="letter-spacing: -0.3px;">{{ wh.warehouseCode }} — {{ wh.location }}</h3>
+                  <div class="text-muted small text-uppercase fw-semibold d-flex flex-wrap align-items-center gap-2" style="font-size: 0.7rem; letter-spacing: 0.5px;">
+                    <span>Capacity: {{ wh.capacity }}</span>
+                    <span class="opacity-25">•</span>
+                    @if (wh.managerName) {
+                      <span class="text-dark">Manager: {{ wh.managerName }}</span>
+                      <button class="btn p-0 text-danger border-0 small text-uppercase fw-bold ms-1" style="font-size: 0.68rem; line-height: 1;" (click)="unassignManager(wh.managerId!)">[ Unassign ]</button>
+                    } @else {
+                      <span class="text-danger bg-light border border-danger px-2 py-0.5" style="font-size: 0.65rem; letter-spacing: 0px;">No manager assigned</span>
+                    }
+                  </div>
+                </div>
+                
+                <div class="d-flex gap-2 align-self-md-start w-100 w-md-auto justify-content-md-end justify-content-start mt-2 mt-md-0">
+                  @if (!wh.managerName) {
+                    <button class="btn btn-sm btn-dark rounded-0 px-3 py-2 text-uppercase fw-bold small" style="font-size: 0.7rem; letter-spacing: 0.3px;" (click)="toggleAssign(wh.id)">
+                      {{ assigningWarehouseId === wh.id ? 'Cancel' : 'Assign Manager' }}
+                    </button>
+                  }
+                  <button class="btn btn-sm btn-outline-dark rounded-0 px-3 py-2 text-uppercase fw-bold small" style="font-size: 0.7rem; letter-spacing: 0.3px;" (click)="toggleEdit(wh.id)">Edit</button>
+                  <button class="btn btn-sm btn-outline-danger rounded-0 px-3 py-2 text-uppercase fw-bold small" style="font-size: 0.7rem; letter-spacing: 0.3px;" (click)="deleteWarehouse(wh.id, wh.warehouseCode)">Delete</button>
+                </div>
+              </div>
+
+              @if (assigningWarehouseId === wh.id) {
+                <div class="mt-4 pt-3 border-top border-dark">
+                  @if (unassignedManagers.length === 0) {
+                    <p class="text-muted small text-uppercase fw-semibold mb-0" style="letter-spacing: 0.5px; font-size: 0.7rem;">No unassigned managers available. Create one first.</p>
+                  } @else {
+                    <div class="d-flex flex-sm-row flex-column gap-2 align-items-sm-center">
+                      <select class="form-select rounded-0 border-dark shadow-none py-2" style="max-width: 320px;" [(ngModel)]="selectedManagerId[wh.id]">
+                        <option [ngValue]="undefined" disabled selected>Select a manager…</option>
+                        @for (m of unassignedManagers; track m.id) {
+                          <option [ngValue]="m.id">{{ m.userName }} ({{ m.employeeCode }})</option>
+                        }
+                      </select>
+                      <button class="btn btn-dark rounded-0 px-4 py-2 text-uppercase fw-bold small" 
+                              style="letter-spacing: 0.5px; font-size: 0.75rem;" (click)="confirmAssign(wh.id)">Confirm Assignment</button>
+                    </div>
+                  }
+                </div>
+              }
+            }
+            
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
