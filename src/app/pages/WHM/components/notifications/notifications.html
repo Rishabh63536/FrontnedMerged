@@ -1,0 +1,140 @@
+<div class="container py-4" style="max-width: 720px;">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <h1 class="text-primary fw-bold mb-0 h3 d-flex align-items-center gap-2">
+      Notifications
+      @if (unreadCount() > 0) {
+        <span class="badge bg-primary rounded-pill fs-7 fw-semibold">
+          {{ unreadCount() }} new
+        </span>
+      }
+    </h1>
+    @if (unreadCount() > 0) {
+      <button class="btn btn-sm btn-outline-primary px-3 fw-medium" (click)="markAllAsRead()" [disabled]="markingAll">
+        @if (markingAll) {
+          <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Marking…
+        } @else {
+          ✓ Mark all as read
+        }
+      </button>
+    }
+  </div>
+
+  @if (loading) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading…</span>
+      </div>
+    </div>
+  } @else {
+    <div class="card border-light-subtle shadow-sm p-3 mb-4 bg-body">
+      <div class="row g-3 align-items-end">
+        <div class="col-12 col-md-auto me-md-auto">
+          <label class="form-label small text-secondary fw-medium mb-1.5 d-block">Filter Status</label>
+          <div class="btn-group w-100" role="group">
+            <button
+              class="btn btn-sm px-3"
+              [class.btn-primary]="readFilter === 'all'"
+              [class.btn-outline-primary]="readFilter !== 'all'"
+              (click)="setReadFilter('all')"
+            >
+              All ({{ notifications.length }})
+            </button>
+            <button
+              class="btn btn-sm px-3"
+              [class.btn-primary]="readFilter === 'unread'"
+              [class.btn-outline-primary]="readFilter !== 'unread'"
+              (click)="setReadFilter('unread')"
+            >
+              Unread ({{ unreadCount() }})
+            </button>
+            <button
+              class="btn btn-sm px-3"
+              [class.btn-primary]="readFilter === 'read'"
+              [class.btn-outline-primary]="readFilter !== 'read'"
+              (click)="setReadFilter('read')"
+            >
+              Read ({{ notifications.length - unreadCount() }})
+            </button>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-auto">
+          <label class="form-label small text-secondary fw-medium mb-1.5">From date</label>
+          <input type="date" class="form-control form-control-sm text-secondary-emphasis" [(ngModel)]="fromDate" (ngModelChange)="applyFilters()" />
+        </div>
+        <div class="col-6 col-md-auto">
+          <label class="form-label small text-secondary fw-medium mb-1.5">To date</label>
+          <input type="date" class="form-control form-control-sm text-secondary-emphasis" [(ngModel)]="toDate" (ngModelChange)="applyFilters()" />
+        </div>
+        
+        @if (fromDate || toDate) {
+          <div class="col-12 col-md-auto text-end text-md-start">
+            <button class="btn btn-sm btn-link text-danger text-decoration-none fw-medium p-1" (click)="clearDates()">
+              ✕ Clear Dates
+            </button>
+          </div>
+        }
+      </div>
+
+      <div class="border-top border-light-subtle mt-3 pt-2 text-end">
+        <span class="text-secondary small fw-medium">
+          Showing {{ filtered.length }} of {{ notifications.length }}
+        </span>
+      </div>
+    </div>
+
+    @if (filtered.length === 0) {
+      <div class="alert alert-light border border-light-subtle text-center p-5 shadow-sm">
+        <div class="fs-2 mb-2 text-muted">🔔</div>
+        @if (notifications.length === 0) {
+          <span class="text-secondary fw-medium">No notifications yet. You'll see critical status updates here.</span>
+        } @else {
+          <span class="text-secondary fw-medium">No notifications match your current filter options.</span>
+        }
+      </div>
+    } @else {
+      <div class="list-group shadow-sm rounded-3 overflow-hidden border border-light-subtle">
+        @for (n of filtered; track n.id) {
+          <div
+            class="list-group-item list-group-item-action p-3 border-start border-4 transition-all"
+            [class.bg-body-tertiary]="!n.read"
+            [class.border-primary]="!n.read"
+            [class.border-transparent]="n.read"
+            style="cursor: pointer;"
+            (click)="markAsRead(n)"
+          >
+            <div class="d-flex gap-3 align-items-start">
+              <div class="mt-0.5 flex-shrink-0">
+                @if (!n.read) {
+                  <span class="badge rounded-circle bg-primary p-1.5 d-inline-block align-middle" title="Unread">
+                    <span class="visually-hidden">New Notification</span>
+                  </span>
+                } @else {
+                  <span class="text-muted small opacity-50">⚪</span>
+                }
+              </div>
+
+              <div class="flex-grow-1">
+                <p class="mb-1 text-dark text-break leading-base" [class.fw-semibold]="!n.read" [class.text-secondary]="n.read">
+                  {{ n.message }}
+                </p>
+                <div class="d-flex align-items-center gap-1.5 text-muted small opacity-75 mt-1">
+                  <span>📅</span>
+                  <span>{{ n.createdAt | date: 'medium' }}</span>
+                </div>
+              </div>
+
+              @if (!n.read) {
+                <div class="flex-shrink-0 d-none d-sm-block">
+                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle font-monospace px-2 py-1 small fw-bold text-uppercase">
+                    New
+                  </span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>

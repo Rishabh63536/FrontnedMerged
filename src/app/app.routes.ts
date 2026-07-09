@@ -14,6 +14,10 @@ import { CreateUserComponent } from './pages/Admin/components/create-user/create
 import { ManageUsersComponent } from './pages/Admin/components/manage-users/manage-users';
 import { ProductsComponent } from './pages/Admin/components/products/products';
 import { AdminShellComponent } from './pages/Admin/components/admin-shell/admin-shell';
+import { OrdersQueueComponent } from './pages/WHM/components/orders-queue/orders-queue';
+import { ReturnsQueueComponent } from './pages/WHM/components/returns-queue/returns-queue';
+import { InventoryComponent } from './pages/WHM/components/inventory/inventory';
+import { NotificationsComponent } from './pages/WHM/components/notifications/notifications';
 
 // Pattern for every role section:
 //   {
@@ -62,7 +66,13 @@ export const routes: Routes = [
     ] },
 
 
-
+     { path: 'warehouse-manager', canActivate: [roleGuard], data: { roles: ['WAREHOUSE_MANAGER'] }, children: [
+      {path:'', component: DashboardComponent, pathMatch: 'full'},
+      {path:'orders', component: OrdersQueueComponent},
+      {path:'returns', component: ReturnsQueueComponent},
+      {path:'inventory', component: InventoryComponent},
+      {path:'notifications', component: NotificationsComponent},
+     ] },
     
   // { path: 'warehouse-manager', canActivate: [roleGuard], data: { roles: ['WAREHOUSE_MANAGER'] }, children: [...] },
   // { path: 'vendor', canActivate: [roleGuard], data: { roles: ['VENDOR'] }, children: [...] },

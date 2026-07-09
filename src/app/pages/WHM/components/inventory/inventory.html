@@ -1,0 +1,106 @@
+<div class="container py-4">
+  <h1 class="text-primary fw-bold mb-1">Inventory</h1>
+  <p class="text-secondary mb-4">Stock levels at your warehouse. Rows below reorder threshold are highlighted.</p>
+
+  @if (successMessage) {
+    <div class="alert alert-success py-2 border-0 shadow-sm mb-3">{{ successMessage }}</div>
+  }
+
+  @if (loading) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading…</span>
+      </div>
+    </div>
+  } @else if (items.length === 0) {
+    <div class="alert alert-light border text-center p-4 shadow-sm text-secondary">
+      No products launched at your warehouse yet.
+    </div>
+  } @else {
+    <div class="table-responsive border border-light-subtle rounded-3 shadow-sm bg-white">
+      <table class="table align-middle mb-0 table-hover">
+        <thead class="table-light">
+          <tr class="text-secondary small text-uppercase" style="letter-spacing: 0.05em;">
+            <th class="ps-4 py-3">Product</th>
+            <th class="py-3">Vendor</th>
+            <th class="px-3 py-3 text-end">Stock</th>
+            <th class="px-3 py-3 text-end">Max Capacity</th>
+            <th class="px-3 py-3 text-end">ROL %</th>
+            <th class="text-center px-3 py-3">Current Stock Level</th>
+            <th class="pe-4 py-3"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of items; track item.id) {
+            <tr [class.table-warning-subtle]="item.belowRol" [class.bg-opacity-25]="item.belowRol">
+              <td class="ps-4 fw-bold text-dark">{{ item.productName }}</td>
+              <td class="text-secondary small">{{ item.vendorCompanyName }}</td>
+              
+              <td class="px-3 text-end fw-semibold">
+                <span [class.text-danger]="item.belowRol">{{ item.stock }}</span>
+                @if (item.belowRol) {
+                  <span class="badge bg-danger text-white ms-1 align-middle px-1.5 py-1 text-uppercase fs-9">Low</span>
+                }
+              </td>
+              <td class="px-3 text-end text-secondary">{{ item.maxStock }}</td>
+              <td class="px-3 text-end text-secondary-emphasis small">{{ item.rolPercent }}%</td>
+              
+              <td class="px-3">
+                <div class="d-flex align-items-center justify-content-center gap-2" style="min-width: 140px;">
+                  <div class="progress flex-grow-1 bg-light border border-light-subtle" style="height: 8px; max-width: 100px;">
+                    <div 
+                      [class]="item.belowRol ? 'progress-bar bg-danger' : 'progress-bar bg-primary'" 
+                      role="progressbar" 
+                      [style.width.%]="getStockPercentage(item)"
+                      [attr.aria-valuenow]="getStockPercentage(item)" 
+                      aria-valuemin="0" 
+                      aria-valuemax="100">
+                    </div>
+                  </div>
+                  <span class="small fw-bold" [class.text-danger]="item.belowRol" [class.text-secondary]="!item.belowRol">
+                    {{ getStockPercentage(item) }}%
+                  </span>
+                </div>
+              </td>
+              
+              <td class="text-end pe-4">
+                <button 
+                  [class]="restockingId === item.id ? 'btn btn-sm btn-outline-secondary px-3' : 'btn btn-sm btn-outline-primary px-3 fw-medium'" 
+                  (click)="openRestock(item)">
+                  {{ restockingId === item.id ? 'Cancel' : 'Update Stock' }}
+                </button>
+              </td>
+            </tr>
+
+            @if (restockingId === item.id) {
+              <tr class="table-light">
+                <td colspan="7" class="p-3 border-top-0">
+                  <div class="d-flex flex-wrap gap-2 align-items-center p-3 bg-white rounded border border-light-subtle mx-3 shadow-sm">
+                    @if (errorMessage) {
+                      <div class="alert alert-danger py-1.5 px-3 mb-0 me-2 small border-0 shadow-sm">
+                        ⚠️ {{ errorMessage }}
+                      </div>
+                    }
+                    <div class="input-group input-group-sm flex-nowrap" style="max-width: 220px;">
+                      <span class="input-group-text bg-light text-secondary small fw-medium">New Count</span>
+                      <input
+                        type="number"
+                        class="form-control"
+                        min="0"
+                        placeholder="Amount"
+                        [(ngModel)]="restockAmount[item.id]"
+                      />
+                    </div>
+                    <button class="btn btn-primary btn-sm px-4 shadow-sm" (click)="confirmRestock(item.id)">
+                      Save Configuration
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

@@ -1,0 +1,149 @@
+<div class="container py-4">
+  <h1 class="text-primary fw-bold mb-1">Orders Awaiting Assignment</h1>
+  <p class="text-secondary mb-4">
+    CONFIRMED orders at your warehouse — assign an available driver to move them forward.
+  </p>
+
+  @if (successMessage) {
+    <div class="alert alert-success py-2 border-0 shadow-sm mb-3">{{ successMessage }}</div>
+  }
+
+  @if (loading) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading…</span>
+      </div>
+    </div>
+  } @else {
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+      <div class="input-group" style="max-width: 380px;">
+        <span class="input-group-text bg-white border-end-0 text-muted">🔍</span>
+        <input
+          type="text"
+          class="form-control border-start-0 ps-0"
+          placeholder="Search by order #, product, customer, address…"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchChange()"
+        />
+      </div>
+      <span class="text-secondary small fw-medium">
+        {{ filteredOrders.length }} of {{ orders.length }} order(s)
+      </span>
+    </div>
+
+    @if (filteredOrders.length === 0) {
+      <div class="alert alert-light border text-center p-4 shadow-sm">
+        @if (searchTerm) {
+          <span class="text-secondary">No orders match "<strong>{{ searchTerm }}</strong>".</span>
+        } @else {
+          <span class="text-secondary">No orders currently awaiting driver assignment. All caught up!</span>
+        }
+      </div>
+    } @else {
+      <div class="list-group shadow-sm rounded-3">
+        @for (order of pagedOrders; track order.id) {
+          <div class="list-group-item list-group-item-action p-4 border-start border-4 position-relative"
+               [class.border-primary]="assigningOrderId === order.id"
+               [class.border-light-subtle]="assigningOrderId !== order.id">
+            
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+              <div class="flex-grow-1">
+                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 fw-bold">
+                    Order #{{ order.id }}
+                  </span>
+                  <h3 class="h6 fw-bold mb-0 text-dark">
+                    {{ order.productNameSnapshot }}
+                  </h3>
+                </div>
+                
+                <div class="d-flex flex-wrap align-items-center text-secondary small gap-3 mb-2">
+                  <div>
+                    <span class="fw-medium text-dark">Qty:</span> {{ order.quantity }}
+                  </div>
+                  <div class="text-black-50">|</div>
+                  <div>
+                    <span class="fw-medium text-dark">Customer:</span> {{ order.customerName }}
+                  </div>
+                  <div class="text-black-50">|</div>
+                  <div>
+                    <span class="fw-bold text-primary">₹{{ order.totalAmount }}</span>
+                  </div>
+                </div>
+                
+                <div class="bg-light p-2.5 rounded border border-light-subtle text-secondary small d-flex align-items-start gap-2">
+                  <span class="text-muted">📍</span>
+                  <span><strong class="text-dark">Deliver to:</strong> {{ order.shippingAddress }}</span>
+                </div>
+              </div>
+
+              <div class="flex-shrink-0 align-self-start align-self-md-center">
+                <button 
+                  [class]="assigningOrderId === order.id ? 'btn btn-sm btn-outline-secondary px-3 fw-medium' : 'btn btn-sm btn-primary px-3 fw-medium shadow-sm'" 
+                  (click)="openAssign(order.id)">
+                  @if (assigningOrderId === order.id) {
+                    ✕ Cancel
+                  } @else {
+                     Assign Driver
+                  }
+                </button>
+              </div>
+            </div>
+
+            @if (assigningOrderId === order.id) {
+              <div class="mt-3 pt-3 border-top bg-light rounded p-3 border border-light-subtle">
+                @if (errorMessage) {
+                  <div class="alert alert-danger py-2 px-3 small mb-3 border-0 shadow-sm">
+                    ⚠️ {{ errorMessage }}
+                  </div>
+                }
+                
+                @if (availableDrivers.length === 0) {
+                  <div class="p-1 text-secondary small d-flex align-items-start gap-2">
+                    <span class="text-muted">ℹ️</span>
+                    <p class="mb-0">
+                      No available drivers found in <strong>"{{ warehouseLocation }}"</strong>. Check if the driver's city matches your 
+                      warehouse location exactly, or wait for one to become available.
+                    </p>
+                  </div>
+                } @else {
+                  <div class="d-flex flex-wrap gap-2 align-items-center">
+                    <div class="flex-grow-1" style="max-width: 360px; min-width: 240px;">
+                      <select class="form-select shadow-sm" [(ngModel)]="selectedDriverId[order.id]">
+                        <option [ngValue]="undefined" disabled selected>Select an available driver…</option>
+                        @for (driver of availableDrivers; track driver.id) {
+                          <option [ngValue]="driver.id">👤 {{ driver.userName }} — {{ driver.licenseNumber }}</option>
+                        }
+                      </select>
+                    </div>
+                    <button class="btn btn-success px-4 shadow-sm" (click)="confirmAssign(order.id)">
+                      Confirm Assignment
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      @if (totalPages > 1) {
+        <nav class="d-flex justify-content-center mt-4">
+          <ul class="pagination mb-0 shadow-sm rounded">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <button class="page-link" (click)="goToPage(currentPage - 1)">Previous</button>
+            </li>
+            @for (page of pageNumbers(); track page) {
+              <li class="page-item" [class.active]="page === currentPage">
+                <button class="page-link" (click)="goToPage(page)">{{ page }}</button>
+              </li>
+            }
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <button class="page-link" (click)="goToPage(currentPage + 1)">Next</button>
+            </li>
+          </ul>
+        </nav>
+      }
+    }
+  }
+</div>
