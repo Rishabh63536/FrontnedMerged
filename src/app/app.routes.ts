@@ -1,23 +1,30 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './components/login/login';
 import { roleGuard } from './core/guards/role-guard';
 import { ProductDetailsComponent } from './pages/Customer/components/product-details/product-details';
 import { MyOrdersComponent } from './pages/Customer/components/my-orders/my-orders';
 import { OrderDetailComponent } from './pages/Customer/components/order-detail/order-detail';
 import { LandingPage } from './pages/Customer/components/landing-page/landing-page';
 import { RegisterComponent } from './pages/Customer/components/register/register';
-import { DashboardComponent } from './pages/Admin/components/dashboard/dashboard';
+import { DashboardComponent} from './pages/Admin/components/dashboard/dashboard';
+import { DashboardComponent as DashboardComponentWHM} from './pages/WHM/components/dashboard/dashboard';
+import { DashboardComponent  as DashboardComponentDriver} from './pages/Driver/components/dashboard/dashboard';
+import { DashboardComponent  as DashboardComponentVendor} from './pages/Vendor/components/dashboard/dashboard';
 import { OrdersComponent } from './pages/Admin/components/orders/orders';
 import { ReturnsComponent } from './pages/Admin/components/returns/returns';
 import { WarehousesComponent } from './pages/Admin/components/warehouses/warehouses';
 import { CreateUserComponent } from './pages/Admin/components/create-user/create-user';
 import { ManageUsersComponent } from './pages/Admin/components/manage-users/manage-users';
 import { ProductsComponent } from './pages/Admin/components/products/products';
+import { ProductsComponent as ProductsComponent2 } from './pages/Vendor/components/products/products';
 import { AdminShellComponent } from './pages/Admin/components/admin-shell/admin-shell';
 import { OrdersQueueComponent } from './pages/WHM/components/orders-queue/orders-queue';
 import { ReturnsQueueComponent } from './pages/WHM/components/returns-queue/returns-queue';
 import { InventoryComponent } from './pages/WHM/components/inventory/inventory';
 import { NotificationsComponent } from './pages/WHM/components/notifications/notifications';
+import { DeliveriesComponent } from './pages/Driver/components/deliveries/deliveries';
+import { PickupsComponent } from './pages/Driver/components/pickups/pickups';
+import { LoginComponent } from './core/components/login/login';
+import { LaunchProductComponent } from './pages/Vendor/components/launch-product/launch-product';
 
 // Pattern for every role section:
 //   {
@@ -67,12 +74,27 @@ export const routes: Routes = [
 
 
      { path: 'warehouse-manager', canActivate: [roleGuard], data: { roles: ['WAREHOUSE_MANAGER'] }, children: [
-      {path:'', component: DashboardComponent, pathMatch: 'full'},
+      {path:'', component: DashboardComponentWHM, pathMatch: 'full'},
       {path:'orders', component: OrdersQueueComponent},
       {path:'returns', component: ReturnsQueueComponent},
       {path:'inventory', component: InventoryComponent},
       {path:'notifications', component: NotificationsComponent},
      ] },
+
+
+  { path: 'driver', canActivate: [roleGuard], data: { roles: ['DRIVER'] }, children: [
+    {path:'', component:DashboardComponentDriver, pathMatch:"full"},
+    {path:'deliveries', component: DeliveriesComponent},
+    {path:'notifications', component: NotificationsComponent},
+    {path:'pickup', component: PickupsComponent}
+  ] },
+
+  { path: 'vendor', canActivate: [roleGuard], data: { roles: ['VENDOR'] }, children: [
+    {path: '', component: DashboardComponentVendor, pathMatch:"full"},
+    {path: 'launch-product/:productId', component: LaunchProductComponent},
+    {path: 'notifications', component: NotificationsComponent},
+    {path: 'products', component: ProductsComponent2}
+  ] },
     
   // { path: 'warehouse-manager', canActivate: [roleGuard], data: { roles: ['WAREHOUSE_MANAGER'] }, children: [...] },
   // { path: 'vendor', canActivate: [roleGuard], data: { roles: ['VENDOR'] }, children: [...] },

@@ -1,10 +1,10 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Login } from '../../services/login';
 import { Products } from '../../services/products';
 import { ProductWarehouses } from '../../services/product-warehouses';
 import { Notifications } from '../../services/notifications';
+import { Login } from '../../../../core/services/login';
 
 @Component({
   selector: 'app-dashboard',
@@ -36,7 +36,7 @@ export class DashboardComponent implements OnInit {
     const user = this.loginService.getStoredUser();
     this.vendorName = user?.name ?? '';
 
-    const vendorId = this.loginService.getVendorId();
+    const vendorId = this.loginService.getRoleProfileId();
     if (!vendorId) {
       this.loading = false;
       return;

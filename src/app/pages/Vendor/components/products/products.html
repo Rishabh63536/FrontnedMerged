@@ -95,7 +95,7 @@
               <button class="btn btn-sm btn-outline-secondary" (click)="toggleEdit(product.productId)">Edit</button>
               <button class="btn btn-sm btn-outline-danger" (click)="deleteProduct(product.productId, product.productName)">Delete</button>
               @if (!isLaunched(product.productId)) {
-                <a class="btn btn-sm btn-primary" [routerLink]="['/launch-product', product.productId]">Launch at Warehouse</a>
+                <a class="btn btn-sm btn-primary" [routerLink]="['/vendor/launch-product', product.productId]">Launch at Warehouse</a>
               } @else {
                 <button class="btn btn-sm btn-outline-primary" (click)="toggleRestock(product.productId)">
                   {{ restockingProductId === product.productId ? 'Cancel' : 'Restock' }}

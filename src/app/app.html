@@ -14,6 +14,20 @@
         <a class="nav-link" routerLink="/warehouse-manager/notifications">Notifications</a>
       }
       <!-- same pattern for VENDOR / DRIVER once each is merged in -->
+
+      @if (UserRole === 'DRIVER') {
+        <a class="nav-link" routerLink="/driver">Dashboard</a>
+        <a class="nav-link" routerLink="/driver/deliveries">Deliveries</a>
+        <a class="nav-link" routerLink="/driver/pickup">Pickup</a>
+        <a class="nav-link" routerLink="/driver/notifications">Notifications</a>
+      }
+
+      @if (UserRole === 'VENDOR') {
+        <a class="nav-link" routerLink="/vendor">Dashboard</a>
+        <a class="nav-link" routerLink="/vendor/products">Products</a>
+        <a class="nav-link" routerLink="/vendor/notifications">Notifications</a>
+      }
+
       <button class="btn btn-sm btn-outline-light" (click)="logout()">Log out</button>
     </div>
   </nav>

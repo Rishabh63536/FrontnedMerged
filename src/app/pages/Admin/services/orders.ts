@@ -11,6 +11,7 @@ export class Orders {
   constructor(private http: HttpClient) {}
 
   getAll(): Observable<OrderResponse[]> {
+    console.log("enetering the getAll method");
     return this.http.get<OrderResponse[]>(`${this.baseUrl}/all`);
   }
 

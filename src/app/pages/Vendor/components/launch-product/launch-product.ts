@@ -100,7 +100,7 @@ export class LaunchProductComponent implements OnInit {
       })
       .subscribe({
         next: () => {
-          this.router.navigate(['/products']);
+          this.router.navigate(['/vendor/products']);
         },
         error: (err) => {
           // Backend's real error message (e.g. exact capacity numbers) is far more

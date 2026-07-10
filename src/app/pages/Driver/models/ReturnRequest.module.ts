@@ -1,0 +1,17 @@
+export type ReturnReason = 'DAMAGED' | 'WRONG_ITEM' | 'NOT_NEEDED' | 'OTHER';
+export type ReturnStatus = 'REQUESTED' | 'APPROVED' | 'REJECTED' | 'RESTOCKED';
+
+export interface ReturnRequestResponse {
+  id: number;
+  orderId: number;
+  customerId: number;
+  reason: ReturnReason;
+  notes: string | null;
+  photoUrl: string | null;
+  status: ReturnStatus;
+  requestedAt: string;
+  resolvedAt: string | null;
+  resolvedByManagerId: number | null;
+  pickupDriverId: number | null;
+  restockedAt: string | null;
+}

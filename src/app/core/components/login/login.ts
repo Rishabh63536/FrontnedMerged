@@ -1,8 +1,8 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { Login } from '../../core/services/login';
-import { ROLE_HOME_ROUTE } from '../../core/models/Auth.module';
+import { Login } from '../../services/login';
+import { ROLE_HOME_ROUTE } from '../../models/Auth.module';
 
 @Component({
   selector: 'app-login',

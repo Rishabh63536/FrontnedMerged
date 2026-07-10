@@ -1,0 +1,37 @@
+<div class="container py-4">
+  <h1 class="text-primary fw-bold mb-1">My Pickups</h1>
+  <p class="text-secondary mb-4">Return requests approved for pickup. Confirm once you've collected the item — photo optional.</p>
+
+  @if (successMessage) { <div class="alert alert-success py-2">{{ successMessage }}</div> }
+
+  @if (loading) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading…</span></div>
+    </div>
+  } @else if (returns.length === 0) {
+    <div class="alert alert-light border text-center">No pending pickups right now.</div>
+  } @else {
+    <div class="list-group">
+      @for (ret of returns; track ret.id) {
+        <div class="list-group-item">
+          <h3 class="h6 fw-bold mb-1">Return #{{ ret.id }} — Order #{{ ret.orderId }}</h3>
+          <p class="text-secondary small mb-1">Reason: {{ ret.reason }}</p>
+          @if (ret.notes) { <p class="text-secondary small mb-0">"{{ ret.notes }}"</p> }
+
+          @if (errorMessage[ret.id]) {
+            <div class="alert alert-danger py-2 mt-2 mb-0">{{ errorMessage[ret.id] }}</div>
+          }
+
+          <div class="mt-3 pt-3 border-top d-flex gap-2 align-items-center flex-wrap">
+            <input type="file" accept="image/jpeg,image/png" class="form-control form-control-sm" style="max-width: 260px;"
+                   (change)="onPhotoSelected(ret.id, $event)" />
+            <button class="btn btn-primary btn-sm" [disabled]="restockingId === ret.id" (click)="confirmRestock(ret.id)">
+              {{ restockingId === ret.id ? 'Confirming…' : 'Confirm Pickup' }}
+            </button>
+          </div>
+          <p class="text-secondary small mt-1 mb-0">Photo is optional for pickups.</p>
+        </div>
+      }
+    </div>
+  }
+</div>
