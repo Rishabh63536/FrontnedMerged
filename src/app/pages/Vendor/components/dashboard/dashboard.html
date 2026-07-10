@@ -1,0 +1,66 @@
+<div class="container py-4">
+  @if (loading) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading…</span></div>
+    </div>
+  } @else {
+    <header class="mb-4">
+      <h1 class="text-primary fw-bold mb-1">Welcome, {{ vendorName }}</h1>
+      <p class="text-secondary mb-0">Manage your catalog and stock</p>
+    </header>
+
+    <div class="row g-3">
+      <div class="col-sm-6 col-lg-3">
+        <a routerLink="/products" class="text-decoration-none">
+          <div class="card lc-card-hover h-100">
+            <div class="card-body">
+              <p class="text-secondary small mb-1 text-uppercase" style="letter-spacing: 0.05em; font-size: 0.75rem;">
+                Total Products
+              </p>
+              <p class="h2 fw-bold mb-0">{{ totalProducts }}</p>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div class="col-sm-6 col-lg-3">
+        <a routerLink="/products" class="text-decoration-none">
+          <div class="card lc-card-hover h-100">
+            <div class="card-body">
+              <p class="text-secondary small mb-1 text-uppercase" style="letter-spacing: 0.05em; font-size: 0.75rem;">
+                Not Yet Launched
+              </p>
+              <p class="h2 fw-bold mb-0" [class.text-warning]="notLaunchedCount > 0">{{ notLaunchedCount }}</p>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div class="col-sm-6 col-lg-3">
+        <a routerLink="/products" class="text-decoration-none">
+          <div class="card lc-card-hover h-100">
+            <div class="card-body">
+              <p class="text-secondary small mb-1 text-uppercase" style="letter-spacing: 0.05em; font-size: 0.75rem;">
+                Low Stock Alerts
+              </p>
+              <p class="h2 fw-bold mb-0" [class.text-warning]="lowStockCount > 0">{{ lowStockCount }}</p>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div class="col-sm-6 col-lg-3">
+        <a routerLink="/notifications" class="text-decoration-none">
+          <div class="card lc-card-hover h-100">
+            <div class="card-body">
+              <p class="text-secondary small mb-1 text-uppercase" style="letter-spacing: 0.05em; font-size: 0.75rem;">
+                Unread Alerts
+              </p>
+              <p class="h2 fw-bold mb-0" [class.text-primary]="unreadNotificationsCount > 0">{{ unreadNotificationsCount }}</p>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  }
+</div>

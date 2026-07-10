@@ -1,0 +1,65 @@
+<div class="container py-4" style="max-width: 640px;">
+  <a routerLink="/products" class="text-decoration-none text-secondary d-inline-block mb-3">&larr; Back to my products</a>
+
+  @if (loading) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading…</span></div>
+    </div>
+  } @else if (!product) {
+    <div class="alert alert-danger">Product not found.</div>
+  } @else {
+    <h1 class="text-primary fw-bold mb-1">Launch "{{ product.productName }}"</h1>
+    <p class="text-secondary mb-4">Pick a warehouse and set initial stock. This can only be done once per product.</p>
+
+    @if (errorMessage) { <div class="alert alert-danger py-2">{{ errorMessage }}</div> }
+
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <form #launchForm="ngForm" (ngSubmit)="launch(launchForm)">
+          <div class="mb-3">
+            <label class="form-label">Warehouse</label>
+            <select
+              class="form-select"
+              name="warehouseId"
+              [(ngModel)]="selectedWarehouseId"
+              (ngModelChange)="onWarehouseChange()"
+              required
+            >
+              <option [ngValue]="null" disabled selected>Select a warehouse…</option>
+              @for (wh of warehouses; track wh.id) {
+                <option [ngValue]="wh.id">{{ wh.warehouseCode }} — {{ wh.location }} (capacity {{ wh.capacity }})</option>
+              }
+            </select>
+          </div>
+
+          @if (selectedWarehouseId) {
+            <div class="alert alert-light border py-2 mb-3" style="font-size: 0.85rem;">
+              <strong>{{ remainingCapacity }}</strong> units of remaining capacity at this warehouse
+              ({{ allocatedAtSelectedWarehouse }} of {{ selectedWarehouseCapacity }} already allocated to other products).
+              Your <code>maxStock</code> below must fit within this.
+            </div>
+          }
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <label class="form-label">Initial Stock</label>
+              <input type="number" name="stock" class="form-control" ngModel required min="0" />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Max Stock</label>
+              <input type="number" name="maxStock" class="form-control" ngModel required min="1" />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Reorder Level %</label>
+              <input type="number" name="rolPercent" class="form-control" ngModel required min="1" max="99" placeholder="40" />
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100" [disabled]="launchForm.invalid || submitting">
+            {{ submitting ? 'Launching…' : 'Launch Product' }}
+          </button>
+        </form>
+      </div>
+    </div>
+  }
+</div>
