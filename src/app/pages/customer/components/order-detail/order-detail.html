@@ -70,29 +70,39 @@
           <div class="alert alert-danger py-2 mt-3 font-medium text-center small mb-0">{{ errorMessage }}</div>
         }
 
-       @if (order.status === 'PENDING' || (order.status === 'IN_TRANSIT' && amountPaid < (order.grandTotal ?? order.totalAmount)) || order.status === 'DELIVERED') {
-  <div class="mt-4 pt-2">
-    @if (order.status === 'PENDING') {
-      <button class="btn btn-primary btn-lg w-100 py-3 fw-bold rounded-3 tracking-wide shadow" [disabled]="processingPayment" (click)="payAdvance()">
-        {{ processingPayment ? 'Securing Transaction Pipeline...' : 'Authorize 50% Advance Booking Escrow' }}
-      </button>
+        <!-- FIX: outer condition now explicitly includes CONFIRMED and ASSIGNED
+             (previously only PENDING/IN_TRANSIT/DELIVERED were listed, so this
+             whole block never rendered at all for CONFIRMED/ASSIGNED orders).
+             Cancel is also now checked independently via isCancellable instead
+             of being nested only inside the PENDING branch, so it correctly
+             shows for PENDING, CONFIRMED, and ASSIGNED alike. -->
+        @if (order.status === 'PENDING'
+             || order.status === 'CONFIRMED'
+             || order.status === 'ASSIGNED'
+             || (order.status === 'IN_TRANSIT' && amountPaid < (order.grandTotal ?? order.totalAmount))
+             || order.status === 'DELIVERED') {
+          <div class="mt-4 pt-2">
+            @if (order.status === 'PENDING') {
+              <button class="btn btn-primary btn-lg w-100 py-3 fw-bold rounded-3 tracking-wide shadow" [disabled]="processingPayment" (click)="payAdvance()">
+                {{ processingPayment ? 'Securing Transaction Pipeline...' : 'Authorize 50% Advance Booking Escrow' }}
+              </button>
+            } @else if (order.status === 'IN_TRANSIT') {
+              <button class="btn btn-success btn-lg w-100 py-3 fw-bold rounded-3 tracking-wide shadow" [disabled]="processingPayment" (click)="payFinal()">
+                {{ processingPayment ? 'Securing Transaction Pipeline...' : 'Clear Remaining Freight Invoice Settlement' }}
+              </button>
+            } @else if (order.status === 'DELIVERED') {
+              <a class="btn btn-outline-primary w-100 mt-2" [routerLink]="['/customer/returns/request', order.id]">
+                Request a Return
+              </a>
+            }
 
-      @if (isCancellable) {
-        <button class="btn btn-outline-danger w-100 mt-2" [disabled]="processingPayment" (click)="cancelOrder()">
-          Cancel Order
-        </button>
-      }
-    } @else if (order.status === 'IN_TRANSIT') {
-      <button class="btn btn-success btn-lg w-100 py-3 fw-bold rounded-3 tracking-wide shadow" [disabled]="processingPayment" (click)="payFinal()">
-        {{ processingPayment ? 'Securing Transaction Pipeline...' : 'Clear Remaining Freight Invoice Settlement' }}
-      </button>
-    } @else if (order.status === 'DELIVERED') {
-      <a class="btn btn-outline-primary w-100 mt-2" [routerLink]="['/customer/returns/request', order.id]">
-        Request a Return
-      </a>
-    }
-  </div>
-}
+            @if (isCancellable) {
+              <button class="btn btn-outline-danger w-100 mt-2" [disabled]="processingPayment" (click)="cancelOrder()">
+                Cancel Order
+              </button>
+            }
+          </div>
+        }
       </div>
     </div>
 

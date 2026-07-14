@@ -9,15 +9,15 @@ import { Observable } from "rxjs";
 })
 export class ReturnRequests {
 
-  private baseUrl:string  = API_BASE_URL;
+  private baseUrl: string = `${API_BASE_URL}/return-requests`;
 
-  constructor(private http: HttpClient){};
+  constructor(private http: HttpClient) {}
 
-  create(returnRequest: CreateReturnRequestRequest):Observable<ReturnRequestResponse>{
-    return this.http.post<ReturnRequestResponse>(this.baseUrl,returnRequest);
+  create(returnRequest: CreateReturnRequestRequest): Observable<ReturnRequestResponse> {
+    return this.http.post<ReturnRequestResponse>(this.baseUrl, returnRequest);
   }
 
-  getByCustomer(customerId: number): Observable<ReturnRequestResponse[]>{
-    return this.http.get<ReturnRequestResponse[]>(`${this.baseUrl}, customerId`);
+  getByCustomer(customerId: number): Observable<ReturnRequestResponse[]> {
+    return this.http.get<ReturnRequestResponse[]>(`${this.baseUrl}/customer/${customerId}`);
   }
 }
