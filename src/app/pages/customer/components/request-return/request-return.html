@@ -1,0 +1,73 @@
+<div class="container py-4" style="max-width: 640px;">
+  <a [routerLink]="['/customer/orders', orderId]" class="text-decoration-none text-secondary d-inline-block mb-3">
+    &larr; Back to order
+  </a>
+
+  @if (loading) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading…</span></div>
+    </div>
+  } @else if (!order) {
+    <div class="alert alert-danger">{{ errorMessage || 'Order not found.' }}</div>
+  } @else if (remainingReturnable <= 0) {
+    <div class="alert alert-warning">
+      All {{ order.quantity }} unit(s) of this order have already been claimed for return.
+    </div>
+  } @else {
+    <h1 class="text-primary fw-bold mb-1">Request a Return</h1>
+    <p class="text-secondary mb-4">
+      {{ order.productNameSnapshot }} — order #{{ order.id }}
+    </p>
+
+    <div class="alert alert-light border py-2 mb-3" style="font-size: 0.85rem;">
+      <strong>{{ remainingReturnable }}</strong> of {{ order.quantity }} unit(s) still eligible for return
+      @if (alreadyClaimedQuantity > 0) {
+        ({{ alreadyClaimedQuantity }} already claimed in a previous return request).
+      }
+    </div>
+
+    @if (errorMessage) { <div class="alert alert-danger py-2">{{ errorMessage }}</div> }
+
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <form #returnForm="ngForm" (ngSubmit)="submit(returnForm)">
+          <div class="mb-3">
+            <label class="form-label">Reason</label>
+            <select class="form-select" name="reason" ngModel required>
+              <option [ngValue]="undefined" disabled selected>Select a reason…</option>
+              <option value="DAMAGED">Damaged</option>
+              <option value="WRONG_ITEM">Wrong Item</option>
+              <option value="NOT_NEEDED">No Longer Needed</option>
+              <option value="OTHER">Other</option>
+            </select>
+            <div class="form-text">
+              Damaged/Wrong Item returns are refunded in full. Other reasons may include a handling fee.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Quantity to Return</label>
+            <input
+              type="number"
+              name="returnQuantity"
+              class="form-control"
+              ngModel
+              required
+              min="1"
+              [max]="remainingReturnable"
+            />
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label">Notes (optional)</label>
+            <textarea name="notes" class="form-control" rows="3" ngModel></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100" [disabled]="returnForm.invalid || submitting">
+            {{ submitting ? 'Submitting…' : 'Submit Return Request' }}
+          </button>
+        </form>
+      </div>
+    </div>
+  }
+</div>

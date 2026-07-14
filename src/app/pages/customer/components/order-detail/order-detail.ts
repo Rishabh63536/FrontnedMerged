@@ -67,7 +67,7 @@ export class OrderDetailComponent implements OnInit {
           this.cdr.detectChanges();
         },
         error: () => {
-          // Not an error state worth surfacing — just means invoice generation
+          // Not an error state worth surfacing, just means invoice generation
           // may have failed server-side; the order itself is still valid.
         },
       });
@@ -128,5 +128,34 @@ export class OrderDetailComponent implements OnInit {
         this.processingPayment = false;
       },
     });
+  }
+
+  cancelOrder(): void {
+  if (!this.order) return;
+
+  const refundNote = this.amountPaid > 0
+    ? ` ₹${this.amountPaid} will be refunded to you.`
+    : '';
+
+  if (!confirm(`Cancel this order? Stock will be restored and any assigned driver freed.${refundNote}`)) return;
+
+  this.processingPayment = true;
+  this.errorMessage = null;
+
+  this.ordersService.cancelOrder(this.order.id).subscribe({
+    next: () => {
+      this.processingPayment = false;
+      this.loadOrder();
+    },
+    error: () => {
+      this.errorMessage = 'Could not cancel this order.';
+      this.processingPayment = false;
+      this.cdr.detectChanges();
+    },
+  });
+}
+
+  get isCancellable(): boolean{
+    return this.order?.status === 'PENDING' || this.order?.status  === 'CONFIRMED' || this.order?.status === 'ASSIGNED';
   }
 }

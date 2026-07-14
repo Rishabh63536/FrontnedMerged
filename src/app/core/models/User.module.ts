@@ -36,7 +36,7 @@ export interface UserRegistrationRequest {
   designation?: string;
   licenseNumber?: string;
   licenseExpiry?: string;
-  city?: string;
+  location?: string;
 }
 
 export interface UserRegistrationResponse {

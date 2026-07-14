@@ -1,0 +1,55 @@
+<div class="container py-4">
+  <h1 class="text-primary fw-bold mb-4">My Returns</h1>
+
+  @if (loading) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading…</span></div>
+    </div>
+  } @else if (returns.length === 0) {
+    <div class="alert alert-light border text-center">
+      No return requests yet. You can request one from a delivered order's detail page.
+    </div>
+  } @else {
+    <div class="list-group">
+      @for (ret of returns; track ret.id) {
+        <div class="list-group-item">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h3 class="h6 fw-bold mb-1">
+                <a [routerLink]="['/customer/orders', ret.orderId]" class="text-decoration-none">Order #{{ ret.orderId }}</a>
+                — {{ ret.returnQuantity }} unit(s)
+              </h3>
+              <p class="text-secondary small mb-1">Reason: {{ ret.reason }}</p>
+              @if (ret.notes) {
+                <p class="text-secondary small mb-0">"{{ ret.notes }}"</p>
+              }
+              <p class="text-secondary small mb-0">Requested {{ ret.requestedAt | date: 'mediumDate' }}</p>
+            </div>
+            <span class="badge" [ngClass]="statusBadgeClass(ret.status)">{{ ret.status }}</span>
+          </div>
+
+          @if (ret.status === 'RESTOCKED' && ret.refundAmount !== null) {
+            <div class="mt-3 pt-3 border-top">
+              <div class="d-flex justify-content-between">
+                <span class="text-secondary">Refunded</span>
+                <span class="fw-bold text-success">₹{{ ret.refundAmount }}</span>
+              </div>
+              @if (ret.handlingFeeAmount && ret.handlingFeeAmount > 0) {
+                <div class="d-flex justify-content-between">
+                  <span class="text-secondary small">Handling fee deducted</span>
+                  <span class="text-secondary small">₹{{ ret.handlingFeeAmount }}</span>
+                </div>
+              }
+            </div>
+          }
+
+          @if (ret.status === 'REJECTED' && ret.notes) {
+            <div class="alert alert-light border py-2 mt-2 mb-0" style="font-size: 0.85rem;">
+              {{ ret.notes }}
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

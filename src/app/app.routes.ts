@@ -25,6 +25,9 @@ import { DeliveriesComponent } from './pages/Driver/components/deliveries/delive
 import { PickupsComponent } from './pages/Driver/components/pickups/pickups';
 import { LoginComponent } from './core/components/login/login';
 import { LaunchProductComponent } from './pages/Vendor/components/launch-product/launch-product';
+import { MyReturnsComponent } from './pages/Customer/components/my-returns/my-returns';
+import { ReturnRequests } from './pages/Customer/services/return-requests';
+import { RequestReturnComponent } from './pages/Customer/components/request-return/request-return';
 
 // Pattern for every role section:
 //   {
@@ -60,6 +63,8 @@ export const routes: Routes = [
       { path: 'products/:id', component: ProductDetailsComponent },
       { path: 'orders', component: MyOrdersComponent },
       { path: 'orders/:id', component: OrderDetailComponent },
+      {path:'returns', component: MyReturnsComponent},
+      {path : 'returns/request/:id', component: RequestReturnComponent}
     ] },
 
     { path: 'admin', component:AdminShellComponent, canActivate: [roleGuard], data: { roles: ['ADMIN'] }, children: [

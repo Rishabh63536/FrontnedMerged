@@ -1,4 +1,4 @@
-export type PaymentType = 'ADVANCE' | 'FINAL';
+export type PaymentType = 'ADVANCE' | 'FINAL'| 'REFUND';
 export type PaymentStatus = 'SUCCESS' | 'FAILED';
 
 export interface PaymentResponse {

@@ -5,6 +5,7 @@ export interface ReturnRequestResponse {
   id: number;
   orderId: number;
   customerId: number;
+  returnQuantity:number;
   reason: ReturnReason;
   notes: string | null;
   photoUrl: string | null;
@@ -14,4 +15,6 @@ export interface ReturnRequestResponse {
   resolvedByManagerId: number | null;
   pickupDriverId: number | null;
   restockedAt: string | null;
+  refundAmount:number;
+  handlingFeeAmount:number;
 }

@@ -14,7 +14,7 @@
     <div class="list-group">
       @for (ret of returns; track ret.id) {
         <div class="list-group-item">
-          <h3 class="h6 fw-bold mb-1">Return #{{ ret.id }} — Order #{{ ret.orderId }}</h3>
+          <h3 class="h6 fw-bold mb-1">Return #{{ ret.id }} — Order #{{ ret.orderId }} ({{ ret.returnQuantity }} unit(s) to collect)</h3>
           <p class="text-secondary small mb-1">Reason: {{ ret.reason }}</p>
           @if (ret.notes) { <p class="text-secondary small mb-0">"{{ ret.notes }}"</p> }
 

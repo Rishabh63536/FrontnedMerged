@@ -53,7 +53,7 @@ export class CreateUserComponent {
     } else if (this.selectedRole === 'DRIVER') {
       request.licenseNumber = v.licenseNumber;
       request.licenseExpiry = v.licenseExpiry;
-      request.city = v.city;
+      request.location = v.location;
     }
 
     this.submitting = true;

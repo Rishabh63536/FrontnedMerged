@@ -161,3 +161,12 @@ nav::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 0px;
 }
+
+.badge-status-requested, .badge-status-approved {
+  background-color: var(--lc-info-bg);
+  color: var(--lc-info);
+  font-weight: 600;
+  font-size: 0.78rem;
+  padding: 0.4em 0.75em;
+  border-radius: 999px;
+}

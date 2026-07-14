@@ -1,13 +1,11 @@
 export type ReturnReason = 'DAMAGED' | 'WRONG_ITEM' | 'NOT_NEEDED' | 'OTHER';
 export type ReturnStatus = 'REQUESTED' | 'APPROVED' | 'REJECTED' | 'RESTOCKED';
 
-export interface ApproveReturnRequest {
-  managerId: number;
-  driverId: number;
-}
-
-export interface RejectReturnRequest {
-  managerId: number;
+export interface CreateReturnRequestRequest {
+  customerId: number;
+  orderId: number;
+  returnQuantity: number;
+  reason: ReturnReason;
   notes?: string;
 }
 
@@ -15,7 +13,7 @@ export interface ReturnRequestResponse {
   id: number;
   orderId: number;
   customerId: number;
-  returnQuantity:number;
+  returnQuantity: number;
   reason: ReturnReason;
   notes: string | null;
   photoUrl: string | null;
@@ -25,6 +23,6 @@ export interface ReturnRequestResponse {
   resolvedByManagerId: number | null;
   pickupDriverId: number | null;
   restockedAt: string | null;
-  refundAmount:number;
-  handlingFeeAmount:number;
+  refundAmount: number | null;
+  handlingFeeAmount: number | null;
 }
