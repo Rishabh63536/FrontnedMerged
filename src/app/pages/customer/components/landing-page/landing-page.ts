@@ -19,9 +19,11 @@ export class LandingPage implements OnInit {
 
   allProducts: ProductDTO[] = [];
   filteredProducts: ProductDTO[] = [];
-
-  // Bound to the search input using ngModel for two-way data binding
   searchQuery: string = '';
+
+  // Pagination Configuration
+  currentPage: number = 1;
+  pageSize: number = 6; // Adjust number of items per page here
 
   constructor(
     private productService: Products,
@@ -42,13 +44,12 @@ export class LandingPage implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.log(err);
+        console.error(err);
         this.loading = false;
       },
     });
   }
 
-  // whenever user types or clicks search this will be called for filter
   filterProducts(): void {
     const query = this.searchQuery.toLowerCase().trim();
 
@@ -60,6 +61,30 @@ export class LandingPage implements OnInit {
           product.productName.toLowerCase().includes(query) ||
           product.productDescription.toLowerCase().includes(query),
       );
+    }
+    
+    // Reset back to page 1 whenever filters change
+    this.currentPage = 1;
+  }
+
+  // Slice item list to show only the items belonging to the active page
+  get paginatedProducts(): ProductDTO[] {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    return this.filteredProducts.slice(startIndex, startIndex + this.pageSize);
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.filteredProducts.length / this.pageSize);
+  }
+
+  get pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
 

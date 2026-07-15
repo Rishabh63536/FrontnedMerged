@@ -1,55 +1,136 @@
-<div class="container py-4">
-  <h1 class="text-primary fw-bold mb-4">My Returns</h1>
+<div class="container py-5" style="max-width: 700px;">
+  
+  <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between border-bottom pb-3 mb-4 gap-3">
+    <div>
+      <h1 class="h4 fw-bold text-dark mb-1">Return Manifest Logs</h1>
+      <p class="text-muted small mb-0">Track your reverse logistics and refund status</p>
+    </div>
+    
+    <div class="d-flex align-items-center gap-2">
+      <label class="text-muted small fw-bold font-monospace text-uppercase mb-0" style="font-size: 0.65rem;">Filter Status:</label>
+      <select class="form-select form-select-sm font-monospace rounded border-secondary-subtle bg-light px-3 py-1.5"
+              style="width: 140px; font-size: 0.8rem;" 
+              (change)="onStatusFilterChange($any($event.target).value)">
+        @for (status of statusOptions; track status) {
+          <option [value]="status" [selected]="selectedStatus === status">{{ status }}</option>
+        }
+      </select>
+    </div>
+  </div>
 
   @if (loading) {
-    <div class="d-flex justify-content-center py-5">
-      <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading…</span></div>
+    <div class="d-flex flex-column align-items-center justify-content-center py-5">
+      <div class="spinner-border text-dark spinner-border-sm mb-3" role="status"></div>
+      <span class="text-muted small font-monospace">Updating ledger records...</span>
     </div>
-  } @else if (returns.length === 0) {
-    <div class="alert alert-light border text-center">
-      No return requests yet. You can request one from a delivered order's detail page.
+  } 
+  
+  @else if (filteredReturns.length === 0) {
+    <div class="alert alert-light border border-dashed text-center p-5 rounded-4 bg-white shadow-sm">
+      <p class="text-muted mb-0 small">No matching return records found.</p>
+      <p class="extra-small text-secondary mt-1" style="font-size: 0.8rem;">
+        Try resetting your filters or request a return from a delivered order page.
+      </p>
     </div>
-  } @else {
-    <div class="list-group">
-      @for (ret of returns; track ret.id) {
-        <div class="list-group-item">
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <h3 class="h6 fw-bold mb-1">
-                <a [routerLink]="['/customer/orders', ret.orderId]" class="text-decoration-none">Order #{{ ret.orderId }}</a>
-                — {{ ret.returnQuantity }} unit(s)
-              </h3>
-              <p class="text-secondary small mb-1">Reason: {{ ret.reason }}</p>
-              @if (ret.notes) {
-                <p class="text-secondary small mb-0">"{{ ret.notes }}"</p>
-              }
-              <p class="text-secondary small mb-0">Requested {{ ret.requestedAt | date: 'mediumDate' }}</p>
-            </div>
-            <span class="badge" [ngClass]="statusBadgeClass(ret.status)">{{ ret.status }}</span>
-          </div>
-
-          @if (ret.status === 'RESTOCKED' && ret.refundAmount !== null) {
-            <div class="mt-3 pt-3 border-top">
-              <div class="d-flex justify-content-between">
-                <span class="text-secondary">Refunded</span>
-                <span class="fw-bold text-success">₹{{ ret.refundAmount }}</span>
+  } 
+  
+  @else {
+    <div class="d-flex flex-column gap-3">
+      @for (ret of paginatedReturns; track ret.id) {
+        <div class="card border-0 shadow-sm rounded-3 overflow-hidden bg-white">
+          <div class="card-body p-4">
+            
+            <div class="d-flex justify-content-between align-items-start pb-3 mb-3 border-bottom">
+              <div>
+                <span class="text-muted small text-uppercase fw-bold d-block mb-1 font-monospace" style="font-size: 0.65rem;">
+                  Reference Link
+                </span>
+                <h3 class="h6 fw-bold mb-0 font-monospace">
+                  <a [routerLink]="['/customer/orders', ret.orderId]" class="text-dark text-decoration-underline">
+                    Order #{{ ret.orderId }}
+                  </a>
+                </h3>
               </div>
-              @if (ret.handlingFeeAmount && ret.handlingFeeAmount > 0) {
-                <div class="d-flex justify-content-between">
-                  <span class="text-secondary small">Handling fee deducted</span>
-                  <span class="text-secondary small">₹{{ ret.handlingFeeAmount }}</span>
-                </div>
-              }
+              <span class="badge px-3 py-1.5 rounded font-monospace small" [ngClass]="statusBadgeClass(ret.status)">
+                {{ ret.status }}
+              </span>
             </div>
-          }
 
-          @if (ret.status === 'REJECTED' && ret.notes) {
-            <div class="alert alert-light border py-2 mt-2 mb-0" style="font-size: 0.85rem;">
-              {{ ret.notes }}
+            <div class="row g-3 text-start mb-2">
+              <div class="col-6 col-sm-4">
+                <span class="text-muted small d-block mb-0.5" style="font-size: 0.75rem;">Return Quantity</span>
+                <span class="fw-semibold text-dark font-monospace">{{ ret.returnQuantity }} Unit(s)</span>
+              </div>
+              <div class="col-6 col-sm-4">
+                <span class="text-muted small d-block mb-0.5" style="font-size: 0.75rem;">Log Date</span>
+                <span class="fw-medium text-dark font-monospace small">{{ ret.requestedAt | date: 'mediumDate' }}</span>
+              </div>
+              <div class="col-12 col-sm-4">
+                <span class="text-muted small d-block mb-0.5" style="font-size: 0.75rem;">Reason Given</span>
+                <span class="fw-medium text-secondary small">{{ ret.reason }}</span>
+              </div>
             </div>
-          }
+
+            @if (ret.notes && ret.status !== 'REJECTED') {
+              <div class="p-2.5 bg-light rounded mt-3 text-secondary small border-start border-3" style="font-style: italic; font-size: 0.8rem;">
+                "{{ ret.notes }}"
+              </div>
+            }
+
+            @if (ret.status === 'RESTOCKED' && ret.refundAmount !== null) {
+              <div class="pt-3 mt-3" style="border-top: 2px dashed #dee2e6;">
+                <div class="d-flex flex-column gap-1.5">
+                  
+                  @if (ret.handlingFeeAmount && ret.handlingFeeAmount > 0) {
+                    <div class="d-flex justify-content-between align-items-center small text-muted">
+                      <span>Deductions (Handling Fee)</span>
+                      <span class="font-monospace text-danger">-{{ ret.handlingFeeAmount | currency:'INR':'symbol':'1.2-2' }}</span>
+                    </div>
+                  }
+                  
+                  <div class="d-flex justify-content-between align-items-center mt-1">
+                    <span class="fw-bold text-dark small">Total Refund Issued</span>
+                    <span class="fw-bold text-success font-monospace fs-5">
+                      {{ ret.refundAmount | currency:'INR':'symbol':'1.2-2' }}
+                    </span>
+                  </div>
+
+                </div>
+              </div>
+            }
+
+            @if (ret.status === 'REJECTED' && ret.notes) {
+              <div class="alert alert-danger border-0 py-2.5 px-3 mt-3 mb-0 d-flex flex-column gap-1 rounded" style="font-size: 0.8rem;">
+                <span class="fw-bold text-uppercase tracking-wider font-monospace" style="font-size: 0.65rem;">Declined Reason Log</span>
+                <span class="text-dark">{{ ret.notes }}</span>
+              </div>
+            }
+
+          </div>
         </div>
       }
     </div>
+
+    @if (totalPages > 1) {
+      <div class="d-flex align-items-center justify-content-between bg-white px-4 py-3 rounded shadow-sm mt-4 border">
+        <div class="text-muted small font-monospace">
+          Showing page <span class="fw-bold text-dark">{{ currentPage }}</span> of <span class="fw-bold text-dark">{{ totalPages }}</span>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-sm btn-outline-secondary font-monospace tracking-wide text-uppercase"
+                  [disabled]="currentPage === 1" 
+                  (click)="changePage(currentPage - 1)"
+                  style="font-size: 0.75rem;">
+            &larr; Prev
+          </button>
+          <button class="btn btn-sm btn-dark font-monospace tracking-wide text-uppercase"
+                  [disabled]="currentPage === totalPages" 
+                  (click)="changePage(currentPage + 1)"
+                  style="font-size: 0.75rem;">
+            Next &rarr;
+          </button>
+        </div>
+      </div>
+    }
   }
 </div>

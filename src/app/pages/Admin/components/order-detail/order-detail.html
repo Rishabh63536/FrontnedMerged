@@ -1,0 +1,75 @@
+<div class="container py-4" style="max-width: 720px;">
+  <a routerLink="/admin/orders" class="text-decoration-none text-secondary d-inline-block mb-3">&larr; Back to all orders</a>
+
+  @if (loading) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading…</span></div>
+    </div>
+  } @else if (!order) {
+    <div class="alert alert-danger">{{ errorMessage || 'Order not found.' }}</div>
+  } @else {
+    <div class="card shadow-sm mb-3">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <h1 class="h4 fw-bold mb-1">Order #{{ order.id }}</h1>
+            <p class="text-secondary mb-0">Placed {{ order.placedAt | date: 'medium' }}</p>
+          </div>
+          <span class="badge" [ngClass]="statusBadgeClass(order.status)">{{ order.status }}</span>
+        </div>
+
+        <hr />
+
+        <div class="row g-3">
+          <div class="col-6">
+            <p class="text-secondary small mb-0">Customer</p>
+            <p class="fw-bold mb-0">{{ order.customerName }}</p>
+          </div>
+          <div class="col-6">
+            <p class="text-secondary small mb-0">Product</p>
+            <p class="fw-bold mb-0">{{ order.productNameSnapshot }} (x{{ order.quantity }})</p>
+          </div>
+          <div class="col-6">
+            <p class="text-secondary small mb-0">Vendor</p>
+            <p class="fw-bold mb-0">{{ order.vendorCompanyName }}</p>
+          </div>
+          <div class="col-6">
+            <p class="text-secondary small mb-0">Warehouse</p>
+            <p class="fw-bold mb-0">{{ order.warehouseCode }}</p>
+          </div>
+          <div class="col-6">
+            <p class="text-secondary small mb-0">Driver</p>
+            <p class="fw-bold mb-0">{{ order.driverName || 'Not assigned' }}</p>
+          </div>
+          <div class="col-6">
+            <p class="text-secondary small mb-0">Total Amount</p>
+            <p class="fw-bold mb-0">₹{{ order.totalAmount }}</p>
+          </div>
+          <div class="col-12">
+            <p class="text-secondary small mb-0">Shipping Address</p>
+            <p class="fw-bold mb-0">{{ order.shippingAddress }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h2 class="h6 fw-bold text-uppercase text-secondary mb-3" style="letter-spacing: 0.05em; font-size: 0.8rem;">
+          Proof of Delivery
+        </h2>
+
+        @if (order.status !== 'DELIVERED' && order.status !== 'RETURNED') {
+          <p class="text-secondary mb-0">Not applicable — this order hasn't been delivered yet.</p>
+        } @else if (!pod) {
+          <p class="text-secondary mb-0">No POD photo on file for this order.</p>
+        } @else {
+          <img [src]="podPhotoFullUrl" alt="Proof of delivery" class="img-fluid rounded border mb-3" style="max-height: 400px;" />
+          <p class="text-secondary small mb-0">
+            Uploaded by {{ pod.driverName }} on {{ pod.uploadedAt | date: 'medium' }}
+          </p>
+        }
+      </div>
+    </div>
+  }
+</div>

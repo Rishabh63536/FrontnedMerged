@@ -1,0 +1,168 @@
+<div class="container-fluid py-4 bg-light min-vh-100">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+      <h1 class="text-dark fw-bold h3 mb-1">Warehouse Collection Report</h1>
+      <p class="text-secondary small mb-0">Gross, refunded, and net collection insights per warehouse.</p>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body d-flex gap-3 align-items-end flex-wrap py-3">
+      <div>
+        <label class="form-label text-secondary fw-semibold small mb-1">From</label>
+        <input type="date" class="form-control form-control-sm border-light-subtle shadow-sm" [(ngModel)]="fromDate" (change)="onFilterChange()" />
+      </div>
+      <div>
+        <label class="form-label text-secondary fw-semibold small mb-1">To</label>
+        <input type="date" class="form-control form-control-sm border-light-subtle shadow-sm" [(ngModel)]="toDate" (change)="onFilterChange()" />
+      </div>
+      <div class="text-muted small pb-1">
+        <i class="bi bi-info-circle me-1"></i> Leave both blank for all-time totals.
+      </div>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading…</span></div>
+    </div>
+  } @else if (warehouseSummaries.length === 0) {
+    <div class="alert alert-light border text-center shadow-sm py-4">
+      <p class="text-muted mb-0 fw-medium">No payment records found in this date range.</p>
+    </div>
+  } @else {
+    
+    <div class="row g-4 mb-4">
+      <div class="col-lg-7">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <h6 class="fw-bold text-dark mb-3">Gross vs Net Collection Breakdown</h6>
+            <div style="height: 300px; position: relative;">
+              <canvas baseChart [data]="chartData" [options]="chartOptions" type="bar"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-5">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <h6 class="fw-bold text-dark mb-3">Net Revenue Share %</h6>
+            <div style="height: 300px; position: relative;">
+              <canvas baseChart [data]="pieChartData" [options]="chartOptionsPie" type="pie"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm overflow-hidden">
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead class="bg-light">
+            <tr class="text-secondary small text-uppercase fw-bold" style="letter-spacing: 0.05em;">
+              <th class="ps-4 py-3">Warehouse</th>
+              <th class="text-end py-3">Gross</th>
+              <th class="text-end py-3">Refunded</th>
+              <th class="text-end py-3">Net</th>
+              <th class="text-end py-3">Transactions</th>
+              <th class="pe-4 py-3"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (summary of warehouseSummaries; track summary.warehouseId) {
+              <tr class="border-bottom border-light">
+                <td class="fw-bold text-dark ps-4">{{ summary.warehouseCode }}</td>
+                <td class="text-end fw-medium text-secondary">₹{{ summary.gross.toFixed(2) }}</td>
+                <td class="text-end fw-medium" [class.text-danger]="summary.refunded > 0">
+                  {{ summary.refunded > 0 ? '- ₹' + summary.refunded.toFixed(2) : '₹0.00' }}
+                </td>
+                <td class="text-end fw-bold text-success">₹{{ summary.net.toFixed(2) }}</td>
+                <td class="text-end text-muted">{{ summary.transactionCount }}</td>
+                <td class="text-end pe-4">
+                  <button class="btn btn-sm btn-light border text-secondary px-3" (click)="toggleExpand(summary.warehouseId)">
+                    {{ expandedWarehouseId === summary.warehouseId ? 'Hide' : 'View Details' }}
+                  </button>
+                </td>
+              </tr>
+              
+              @if (expandedWarehouseId === summary.warehouseId) {
+                @let stats = getWarehouseStats(summary.warehouseId);
+                <tr>
+                  <td colspan="6" class="bg-light-subtle p-0 border-bottom">
+                    <div class="px-4 py-3 border-start border-4 border-secondary m-3 bg-white rounded shadow-sm">
+
+                      <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="small fw-bold text-secondary mb-0 text-uppercase" style="letter-spacing: 0.05em;">
+                          {{ summary.warehouseCode }} — Detailed Analytics
+                        </h6>
+                        <span class="badge bg-light text-secondary border px-3 py-2 fw-medium">
+                          Avg ₹{{ stats.avgNetPerOrder.toFixed(2) }} / order across {{ stats.distinctOrderCount }} order(s)
+                        </span>
+                      </div>
+
+                      <!-- Per-warehouse charts, replacing the old plain-number stat cards -->
+                      <div class="row g-3 mb-4">
+                        <div class="col-lg-8">
+                          <div class="p-3 bg-light rounded-3 border h-100">
+                            <p class="text-secondary small mb-2 fw-semibold">Cumulative Net Collection Trend</p>
+                            <div style="height: 200px; position: relative;">
+                              <canvas baseChart [data]="getWarehouseTrendData(summary.warehouseId)" [options]="chartOptionsLine" type="line"></canvas>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-lg-4">
+                          <div class="p-3 bg-light rounded-3 border h-100 d-flex flex-column">
+                            <p class="text-secondary small mb-2 fw-semibold">
+                              Kept vs Refunded
+                              <span class="float-end" [class.text-danger]="stats.refundRatePercent > 10">{{ stats.refundRatePercent }}%</span>
+                            </p>
+                            <div style="height: 170px; position: relative;" class="flex-grow-1">
+                              <canvas baseChart [data]="getWarehouseRefundDonutData(summary.warehouseId)" [options]="chartOptionsDonut" type="doughnut"></canvas>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <h6 class="small fw-bold text-secondary mb-3">Recent Transactions for {{ summary.warehouseCode }}</h6>
+                      <table class="table table-sm table-borderless mb-0">
+                        <thead>
+                          <tr class="text-muted small border-bottom pb-2">
+                            <th>Order ID</th>
+                            <th>Transaction Type</th>
+                            <th class="text-end">Amount</th>
+                            <th class="text-end">Timestamp</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (record of getRecordsForWarehouse(summary.warehouseId); track record.orderId + record.paidAt) {
+                            <tr class="align-middle">
+                              <td class="fw-medium text-dark">#{{ record.orderId }}</td>
+                              <td>
+                                <span class="badge rounded-pill px-2.5 py-1 text-uppercase font-monospace small"
+                                      [class.bg-success-subtle]="record.paymentType !== 'REFUND'"
+                                      [class.text-success]="record.paymentType !== 'REFUND'"
+                                      [class.bg-danger-subtle]="record.paymentType === 'REFUND'"
+                                      [class.text-danger]="record.paymentType === 'REFUND'">
+                                  {{ record.paymentType }}
+                                </span>
+                              </td>
+                              <td class="text-end fw-bold" [class.text-danger]="record.amount < 0" [class.text-dark]="record.amount >= 0">
+                                ₹{{ record.amount.toFixed(2) }}
+                              </td>
+                              <td class="text-end text-secondary small">{{ record.paidAt | date: 'medium' }}</td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>

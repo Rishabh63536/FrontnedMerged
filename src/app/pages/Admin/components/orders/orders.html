@@ -110,6 +110,7 @@
                     </td>
                     
                     <td class="pe-4 text-end py-3">
+                      <a class = "btn btn-sm btn-outline-secondary me-1" [routerLink] ="['/admin/orders', order.id]">View</a>
                       @if (isCancellable(order)) {
                         <button class="btn btn-sm btn-outline-danger rounded-0 text-uppercase font-monospace fw-semibold px-2" 
                                 style="font-size: 0.68rem; letter-spacing: 0.5px; transition: none;"

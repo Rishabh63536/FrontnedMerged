@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Orders as OrdersService } from '../../services/orders';
 import { OrderResponse, OrderStatus } from '../../models/Order.module';
+import { RouterModule } from '@angular/router';
 
 const CANCELLABLE: OrderStatus[] = ['PENDING', 'CONFIRMED', 'ASSIGNED'];
 
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './orders.html',
 })
 export class OrdersComponent implements OnInit {

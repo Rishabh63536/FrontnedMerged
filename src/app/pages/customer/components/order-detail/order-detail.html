@@ -1,81 +1,139 @@
-<div class="container py-5" style="max-width: 800px;">
-  <a routerLink="/customer/orders" class="btn btn-link text-decoration-none text-muted fw-semibold p-0 mb-4 d-inline-flex align-items-center gap-2">
-    <span>&larr;</span> Return to Freight Orders
+<div class="container py-5" style="max-width: 580px;">
+  <a routerLink="/customer/orders" class="btn btn-link text-decoration-none text-muted fw-semibold p-0 mb-4 d-inline-flex align-items-center gap-2 small">
+    <span>&larr;</span> Back to Manifest Orders
   </a>
 
   @if (loading) {
     <div class="d-flex flex-column align-items-center justify-content-center py-5">
-      <div class="spinner-border text-primary mb-3" role="status"></div>
-      <span class="text-secondary small">Fetching Manifest Specifications...</span>
+      <div class="spinner-border text-dark spinner-border-sm mb-3" role="status"></div>
+      <span class="text-muted small font-monospace">Retrieving Manifest Data...</span>
     </div>
-  } @else if (!order) {
+  } 
+  
+  @else if (!order) {
     <div class="alert alert-danger border-0 shadow-sm d-flex align-items-center gap-3" role="alert">
-      <span>{{ errorMessage || 'System error: Order identifier not found.' }}</span>
+      <span class="small fw-medium">{{ errorMessage || 'System Error: Manifest identifier not found.' }}</span>
     </div>
-  } @else {
-    
-    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 bg-white">
-      <div class="card-header bg-dark text-white p-4 d-flex align-items-center justify-content-between border-0">
-        <div>
-          <span class="text-uppercase text-secondary small font-monospace tracking-wider d-block opacity-75">Consignment Bill</span>
-          <h1 class="h4 fw-bold mb-0 text-white font-monospace">Order Reference #{{ order.id }}</h1>
-        </div>
-        <span class="badge px-3 py-2 border border-light-subtle rounded-pill font-monospace" [ngClass]="statusBadgeClass">
+  } 
+  
+  @else {
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white mb-4">
+      
+      <div class="card-header bg-dark text-white p-4 text-center border-0 position-relative">
+        <span class="text-uppercase text-secondary small fw-bold tracking-wider d-block mb-1 style-monospace" style="font-size: 0.7rem; color: #adb5bd !important;">
+          Logistics Dispatch Receipt
+        </span>
+        <h1 class="h5 fw-bold mb-2 font-monospace text-white">WAYBILL #{{ order.id }}</h1>
+        <span class="badge px-3 py-1.5 rounded-pill font-monospace small mt-1" [ngClass]="statusBadgeClass">
           {{ order.status }}
         </span>
       </div>
 
-      <div class="card-body p-4 bg-white">
-        <div class="d-flex align-items-center justify-content-between mb-4">
-          <span class="text-muted small">Registered Ingress Timestamp:</span>
-          <span class="fw-semibold text-dark font-monospace">{{ order.placedAt | date: 'medium' }}</span>
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+          <span class="text-muted small">Booking Date:</span>
+          <span class="small text-dark font-monospace fw-medium">{{ order.placedAt | date: 'medium' }}</span>
         </div>
 
-        <div class="p-3 bg-light rounded-3 mb-4">
-          <div class="row g-4">
-            <div class="col-sm-6">
-              <label class="text-muted small text-uppercase tracking-wider fw-bold d-block mb-1" style="font-size: 0.7rem;">Product Description</label>
-              <p class="fw-bold text-dark mb-0 fs-5">{{ order.productNameSnapshot }}</p>
+        <div class="mb-4">
+          <div class="row g-3">
+            <div class="col-8">
+              <label class="text-muted small text-uppercase fw-bold d-block mb-1" style="font-size: 0.65rem; tracking-weight: 0.5px;">Consignment Item</label>
+              <p class="fw-semibold text-dark mb-0 text-truncate">{{ order.productNameSnapshot }}</p>
             </div>
-            <div class="col-sm-6">
-              <label class="text-muted small text-uppercase tracking-wider fw-bold d-block mb-1" style="font-size: 0.7rem;">Allocation Quantity</label>
-              <p class="fw-bold text-dark mb-0 fs-5 font-monospace">{{ order.quantity }} Units</p>
+            <div class="col-4 text-end">
+              <label class="text-muted small text-uppercase fw-bold d-block mb-1" style="font-size: 0.65rem;">Quantity</label>
+              <p class="fw-bold text-dark mb-0 font-monospace">{{ order.quantity }} Units</p>
             </div>
-            <div class="col-12">
-              <label class="text-muted small text-uppercase tracking-wider fw-bold d-block mb-1" style="font-size: 0.7rem;">Shipping Destination Routing</label>
-              <p class="fw-semibold text-dark mb-0">{{ order.shippingAddress }}</p>
+            
+            <div class="col-12 mt-3">
+              <label class="text-muted small text-uppercase fw-bold d-block mb-1" style="font-size: 0.65rem;">Shipping Destination</label>
+              <p class="small text-dark mb-0 fw-medium text-secondary">{{ order.shippingAddress }}</p>
             </div>
-            <div class="col-12">
-              <label class="text-muted small text-uppercase tracking-wider fw-bold d-block mb-1" style="font-size: 0.7rem;">Assigned Transport Courier Personnel</label>
+
+            <div class="col-12 mt-3">
+              <label class="text-muted small text-uppercase fw-bold d-block mb-1" style="font-size: 0.65rem;">Assigned Fleet Driver</label>
               <div class="d-flex align-items-center gap-2 mt-1">
-                <span class="rounded-circle bg-secondary-subtle d-inline-block" style="width: 8px; height: 8px;"></span>
-                <p class="fw-bold text-dark mb-0">{{ order.driverName || 'Awaiting Logistics Dispatch Allocation' }}</p>
+                <span class="rounded-circle d-inline-block" [ngClass]="order.driverName ? 'bg-success' : 'bg-warning'" style="width: 6px; height: 6px;"></span>
+                <p class="small text-dark mb-0 font-monospace text-secondary">
+                  {{ order.driverName || 'Awaiting Logistics Allocation' }}
+                </p>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="border-top pt-3 d-flex flex-column gap-2">
-          <div class="d-flex justify-content-between align-items-center">
-            <span class="text-muted font-medium">Gross Contract Value</span>
-            <span class="fw-bold text-dark fs-5 font-monospace">₹{{ order.grandTotal ?? order.totalAmount }}</span>
+        @if (invoice) {
+          <div class="pt-3 my-4" style="border-top: 2px dashed #dee2e6;">
+            <label class="text-muted small text-uppercase fw-bold d-block mb-3" style="font-size: 0.65rem;">Freight Cost Breakdown</label>
+            
+            <div class="d-flex flex-column gap-2 mb-3">
+              <div class="d-flex justify-content-between small">
+                <span class="text-muted">Subtotal Base Amount</span>
+                <span class="font-monospace text-dark fw-medium">{{ invoice.subtotal | currency:'INR':'symbol':'1.2-2' }}</span>
+              </div>
+              <div class="d-flex justify-content-between small">
+                <span class="text-muted">Regulatory Tax ({{ invoice.taxPercent }}%)</span>
+                <span class="font-monospace text-dark fw-medium">{{ invoice.taxAmount | currency:'INR':'symbol':'1.2-2' }}</span>
+              </div>
+              @if (invoice.deliveryFee) {
+                <div class="d-flex justify-content-between small">
+                  <span class="text-muted">Linehaul & Freight Surcharge</span>
+                  <span class="font-monospace text-dark fw-medium">{{ invoice.deliveryFee | currency:'INR':'symbol':'1.2-2' }}</span>
+                </div>
+              }
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+              <span class="fw-bold text-dark small">Total Valuation</span>
+              <span class="fw-bold text-dark fs-5 font-monospace">{{ invoice.totalAmount | currency:'INR':'symbol':'1.2-2' }}</span>
+            </div>
           </div>
-          <div class="d-flex justify-content-between align-items-center">
-            <span class="text-muted font-medium">Cleared Ledger Escrow</span>
-            <span class="fw-bold text-success fs-5 font-monospace">₹{{ amountPaid }}</span>
+        } @else {
+          <div class="pt-3 my-4" style="border-top: 2px dashed #dee2e6;">
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fw-bold text-dark small">Total Valuation</span>
+              <span class="fw-bold text-dark fs-5 font-monospace">{{ (order.grandTotal ?? order.totalAmount) | currency:'INR':'symbol':'1.2-2' }}</span>
+            </div>
           </div>
-        </div>
-
-        @if (errorMessage) {
-          <div class="alert alert-danger py-2 mt-3 font-medium text-center small mb-0">{{ errorMessage }}</div>
         }
 
-        <!-- FIX: outer condition now explicitly includes CONFIRMED and ASSIGNED
-             (previously only PENDING/IN_TRANSIT/DELIVERED were listed, so this
-             whole block never rendered at all for CONFIRMED/ASSIGNED orders).
-             Cancel is also now checked independently via isCancellable instead
-             of being nested only inside the PENDING branch, so it correctly
-             shows for PENDING, CONFIRMED, and ASSIGNED alike. -->
+        <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded-3 mb-2 border">
+          <span class="text-muted small fw-bold text-uppercase" style="font-size: 0.65rem;">Total Remitted (Paid)</span>
+          <span class="fw-bold text-success font-monospace fs-5">{{ amountPaid | currency:'INR':'symbol':'1.2-2' }}</span>
+        </div>
+
+        @if (payments.length > 0) {
+          <div class="pt-3 my-4" style="border-top: 2px dashed #dee2e6;">
+            <label class="text-muted small text-uppercase fw-bold d-block mb-2" style="font-size: 0.65rem;">Remittance Ledger History</label>
+            <div class="table-responsive">
+              <table class="table table-borderless align-middle mb-0 small">
+                <tbody>
+                  @for (payment of payments; track payment.id) {
+                    <tr class="border-bottom-subtle">
+                      <td class="ps-0 py-2">
+                        <p class="mb-0 fw-semibold text-dark" style="font-size: 0.85rem;">
+                          {{ payment.type === 'ADVANCE' ? 'Initial Milestone Deposit' : 'Final Consignment Settlement' }}
+                        </p>
+                        <p class="mb-0 text-muted font-monospace text-secondary extra-small" style="font-size: 0.75rem;">
+                          {{ payment.paidAt | date: 'short' }}
+                        </p>
+                      </td>
+                      <td class="text-end pe-0 py-2">
+                        <span class="fw-bold text-success font-monospace">{{ payment.amount | currency:'INR':'symbol':'1.2-2' }}</span>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        }
+
+        @if (errorMessage) {
+          <div class="alert alert-danger py-2 mt-3 text-center small mb-0 border-0 fw-medium">{{ errorMessage }}</div>
+        }
+
         @if (order.status === 'PENDING'
              || order.status === 'CONFIRMED'
              || order.status === 'ASSIGNED'
@@ -83,90 +141,27 @@
              || order.status === 'DELIVERED') {
           <div class="mt-4 pt-2">
             @if (order.status === 'PENDING') {
-              <button class="btn btn-primary btn-lg w-100 py-3 fw-bold rounded-3 tracking-wide shadow" [disabled]="processingPayment" (click)="payAdvance()">
-                {{ processingPayment ? 'Securing Transaction Pipeline...' : 'Authorize 50% Advance Booking Escrow' }}
-              </button>
+              <a class="btn btn-dark btn-md w-100 py-2.5 fw-bold rounded-3 shadow-sm font-monospace text-uppercase tracking-wider" style="font-size: 0.85rem;" [routerLink]="['/customer/orders', order.id, 'pay', 'advance']">
+                Remit Advance Escrow
+              </a>
             } @else if (order.status === 'IN_TRANSIT') {
-              <button class="btn btn-success btn-lg w-100 py-3 fw-bold rounded-3 tracking-wide shadow" [disabled]="processingPayment" (click)="payFinal()">
-                {{ processingPayment ? 'Securing Transaction Pipeline...' : 'Clear Remaining Freight Invoice Settlement' }}
-              </button>
+              <a class="btn btn-success btn-md w-100 py-2.5 fw-bold rounded-3 shadow-sm font-monospace text-uppercase tracking-wider" style="font-size: 0.85rem;" [routerLink]="['/customer/orders', order.id, 'pay', 'final']">
+                Settle Balance Invoice
+              </a>
             } @else if (order.status === 'DELIVERED') {
-              <a class="btn btn-outline-primary w-100 mt-2" [routerLink]="['/customer/returns/request', order.id]">
-                Request a Return
+              <a class="btn btn-outline-secondary btn-md w-100 py-2 fw-semibold" style="font-size: 0.85rem;" [routerLink]="['/customer/returns/request', order.id]">
+                Initiate Return Dispatch
               </a>
             }
 
             @if (isCancellable) {
-              <button class="btn btn-outline-danger w-100 mt-2" [disabled]="processingPayment" (click)="cancelOrder()">
-                Cancel Order
+              <button class="btn btn-link text-danger text-decoration-none w-100 mt-2 btn-sm fw-bold font-monospace text-uppercase tracking-wider" style="font-size: 0.75rem;" [disabled]="processingPayment" (click)="cancelOrder()">
+                Void Manifest Order
               </button>
             }
           </div>
         }
       </div>
     </div>
-
-    @if (invoice) {
-      <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 bg-white">
-        <div class="card-body p-4">
-          <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-3">
-            <h2 class="h6 fw-bold text-uppercase text-secondary mb-0 tracking-wider">
-              Itemized Commercial Invoice
-            </h2>
-            <span class="badge bg-light text-dark font-monospace px-3 py-2 border rounded-pill fw-bold">
-              Ref: {{ invoice.invoiceNumber }}
-            </span>
-          </div>
-          
-          <div class="d-flex flex-column gap-2 mb-3">
-            <div class="d-flex justify-content-between">
-              <span class="text-muted small">Subtotal Base Amount</span>
-              <span class="font-monospace text-dark fw-medium">₹{{ invoice.subtotal }}</span>
-            </div>
-            <div class="d-flex justify-content-between">
-              <span class="text-muted small">Regulatory Assessment Surcharges ({{ invoice.taxPercent }}%)</span>
-              <span class="font-monospace text-dark fw-medium">₹{{ invoice.taxAmount }}</span>
-            </div>
-            @if (invoice.deliveryFee) {
-              <div class="d-flex justify-content-between">
-                <span class="text-muted small">Freight & Linehaul Surcharge</span>
-                <span class="font-monospace text-dark fw-medium">₹{{ invoice.deliveryFee }}</span>
-              </div>
-            }
-          </div>
-          <div class="d-flex justify-content-between align-items-center border-top pt-3">
-            <span class="fw-bold text-dark">Aggregated Total Valuation</span>
-            <span class="fw-extrabold text-primary h4 font-monospace mb-0">₹{{ invoice.totalAmount }}</span>
-          </div>
-        </div>
-      </div>
-    }
-
-    @if (payments.length > 0) {
-      <div class="card border-0 shadow-sm rounded-4 bg-white">
-        <div class="card-body p-4">
-          <h2 class="h6 fw-bold text-uppercase text-secondary border-bottom pb-3 mb-2 tracking-wider">
-            Remittance Ledger History
-          </h2>
-          <div class="table-responsive">
-            <table class="table table-borderless align-middle mb-0">
-              <tbody>
-                @for (payment of payments; track payment.id) {
-                  <tr class="border-bottom-subtle">
-                    <td class="ps-0 py-3">
-                      <p class="mb-0 fw-bold text-dark">{{ payment.type === 'ADVANCE' ? 'Initial Milestone Deposit' : 'Final Consignment Settlement' }}</p>
-                      <p class="mb-0 text-muted small font-monospace">{{ payment.paidAt | date: 'medium' }}</p>
-                    </td>
-                    <td class="text-end pe-0 py-3">
-                      <span class="fw-bold text-success fs-5 font-monospace">+ ₹{{ payment.amount }}</span>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    }
   }
 </div>

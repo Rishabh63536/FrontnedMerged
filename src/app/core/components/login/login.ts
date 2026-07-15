@@ -32,7 +32,7 @@ export class LoginComponent {
         localStorage.setItem('result', JSON.stringify(result));
 
         // The one real behavioral difference from the 4 separate apps: no role
-        // rejection here — EVERY role logs in through this same screen, then
+        // rejection here, EVERY role logs in through this same screen, then
         // gets routed to their own home route.
         if (result.role === 'WAREHOUSE_MANAGER' && !result.warehouseId) {
           this.loginError = 'Your account is not yet assigned to a warehouse. Contact your admin.';

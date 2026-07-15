@@ -94,41 +94,41 @@ export class OrderDetailComponent implements OnInit {
     return this.payments.reduce((sum, p) => sum + p.amount, 0);
   }
 
-  payAdvance(): void {
-    if (!this.order) return;
-    this.processingPayment = true;
-    this.errorMessage = null;
+  // payAdvance(): void {
+  //   if (!this.order) return;
+  //   this.processingPayment = true;
+  //   this.errorMessage = null;
 
-    this.paymentsService.payAdvance(this.order.id).subscribe({
-      next: () => {
-        this.processingPayment = false;
-        this.loadOrder();
-         this.cdr.detectChanges();
-      },
-      error: () => {
-        this.errorMessage = 'Payment failed. Please try again.';
-        this.processingPayment = false;
-      },
-    });
-  }
+  //   this.paymentsService.payAdvance(this.order.id).subscribe({
+  //     next: () => {
+  //       this.processingPayment = false;
+  //       this.loadOrder();
+  //        this.cdr.detectChanges();
+  //     },
+  //     error: () => {
+  //       this.errorMessage = 'Payment failed. Please try again.';
+  //       this.processingPayment = false;
+  //     },
+  //   });
+  // }
 
-  payFinal(): void {
-    if (!this.order) return;
-    this.processingPayment = true;
-    this.errorMessage = null;
+  // payFinal(): void {
+  //   if (!this.order) return;
+  //   this.processingPayment = true;
+  //   this.errorMessage = null;
 
-    this.paymentsService.payFinal(this.order.id).subscribe({
-      next: () => {
-        this.processingPayment = false;
-        this.loadOrder();
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.errorMessage = 'Payment failed. Please try again.';
-        this.processingPayment = false;
-      },
-    });
-  }
+  //   this.paymentsService.payFinal(this.order.id).subscribe({
+  //     next: () => {
+  //       this.processingPayment = false;
+  //       this.loadOrder();
+  //       this.cdr.detectChanges();
+  //     },
+  //     error: () => {
+  //       this.errorMessage = 'Payment failed. Please try again.';
+  //       this.processingPayment = false;
+  //     },
+  //   });
+  // }
 
   cancelOrder(): void {
   if (!this.order) return;

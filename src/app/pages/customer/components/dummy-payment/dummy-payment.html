@@ -1,0 +1,82 @@
+<div class="d-flex align-items-center justify-content-center py-5" style="min-height: 100vh; background-color: var(--lc-canvas);">
+  <div class="card shadow-sm" style="max-width: 440px; width: 100%;">
+    <div class="card-body p-4">
+
+      @if (loading) {
+        <div class="d-flex justify-content-center py-5">
+          <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading…</span></div>
+        </div>
+      } @else if (!order) {
+        <div class="alert alert-danger">{{ errorMessage || 'Order not found.' }}</div>
+      } @else {
+        <div class="text-center mb-4">
+          <div class="d-inline-flex align-items-center gap-2 mb-2">
+            <span class="fw-bold text-primary fs-5">LogiChain360</span>
+            <span class="badge bg-teal-tint text-teal">Secure Checkout</span>
+          </div>
+          <p class="text-secondary small mb-0">
+            {{ paymentType === 'advance' ? 'Advance Payment' : 'Final Payment' }} — Order #{{ order.id }}
+          </p>
+        </div>
+
+        <div class="bg-light rounded-3 p-3 text-center mb-4">
+          <p class="text-secondary small mb-1">Amount to Pay</p>
+          <p class="h3 fw-bold text-dark mb-0">₹{{ displayAmount.toFixed(2) }}</p>
+          <p class="text-secondary mb-0" style="font-size: 0.75rem;">
+            Final amount (incl. tax{{ paymentType === 'final' ? ' & delivery fee' : '' }}) is confirmed after payment.
+          </p>
+        </div>
+
+        @if (errorMessage) {
+          <div class="alert alert-danger py-2">{{ errorMessage }}</div>
+        }
+
+        <form #payForm="ngForm" (ngSubmit)="pay(payForm)">
+          <div class="mb-3">
+            <label class="form-label small">Cardholder Name</label>
+            <input type="text" name="cardholderName" class="form-control" ngModel required placeholder="As shown on card" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small">Card Number</label>
+            <input type="text" name="cardNumber" class="form-control" ngModel required
+                   pattern="^[0-9]{16}$" maxlength="16" placeholder="1234 5678 9012 3456"
+                   #cardNumber="ngModel" [class.is-invalid]="cardNumber.invalid && (cardNumber.touched || cardNumber.dirty)" />
+            @if (cardNumber.invalid && (cardNumber.touched || cardNumber.dirty)) {
+              <div class="invalid-feedback">Enter a 16-digit card number.</div>
+            }
+          </div>
+
+          <div class="row g-2 mb-4">
+            <div class="col-7">
+              <label class="form-label small">Expiry (MM/YY)</label>
+              <input type="text" name="expiry" class="form-control" ngModel required
+                     pattern="^(0[1-9]|1[0-2])\/[0-9]{2}$" placeholder="MM/YY"
+                     #expiry="ngModel" [class.is-invalid]="expiry.invalid && (expiry.touched || expiry.dirty)" />
+              @if (expiry.invalid && (expiry.touched || expiry.dirty)) {
+                <div class="invalid-feedback">Format: MM/YY</div>
+              }
+            </div>
+            <div class="col-5">
+              <label class="form-label small">CVV</label>
+              <input type="password" name="cvv" class="form-control" ngModel required
+                     pattern="^[0-9]{3}$" maxlength="3" placeholder="123"
+                     #cvv="ngModel" [class.is-invalid]="cvv.invalid && (cvv.touched || cvv.dirty)" />
+              @if (cvv.invalid && (cvv.touched || cvv.dirty)) {
+                <div class="invalid-feedback">3 digits</div>
+              }
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-2" [disabled]="payForm.invalid || processing">
+            {{ processing ? 'Processing Payment…' : 'Pay ₹' + displayAmount.toFixed(2) }}
+          </button>
+        </form>
+
+        <p class="text-center text-secondary mt-3 mb-0" style="font-size: 0.75rem;">
+         This is a simulated payment screen for demo purposes — no real card is charged.
+        </p>
+      }
+    </div>
+  </div>
+</div>
