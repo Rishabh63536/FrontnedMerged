@@ -31,6 +31,7 @@ import { ReturnRequests } from './pages/Customer/services/return-requests';
 import { RequestReturnComponent } from './pages/Customer/components/request-return/request-return';
 import { ReportsComponent } from './pages/Admin/components/reports/reports';
 import { DummyPaymentComponent } from './pages/Customer/components/dummy-payment/dummy-payment';
+import { OrderStatus } from './pages/Customer/components/order-status/order-status';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -43,7 +44,8 @@ export const routes: Routes = [
       { path: 'orders/:id', component: OrderDetailComponent },
       {path:'returns', component: MyReturnsComponent},
       {path : 'returns/request/:id', component: RequestReturnComponent},
-      {path: 'orders/:id/pay/:type', component: DummyPaymentComponent}
+      {path: 'orders/:id/pay/:type', component: DummyPaymentComponent},
+      {path: 'orders/:id/status', component: OrderStatus}
     ] },
 
     { path: 'admin', component:AdminShellComponent, canActivate: [roleGuard], data: { roles: ['ADMIN'] }, children: [

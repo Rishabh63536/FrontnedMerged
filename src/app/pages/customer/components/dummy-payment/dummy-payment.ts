@@ -48,9 +48,30 @@ export class DummyPaymentComponent implements OnInit {
     });
   }
 
-  get displayAmount(): number {
-    return this.order ? this.order.totalAmount * 0.5 : 0;
+private readonly taxPercent = 18.0;
+private readonly deliveryPercent = 5.0;
+
+get displayAmount(): number {
+  if (!this.order) return 0;
+
+  const amountDueBeforeDelivery = this.order.totalAmount * (1 + this.taxPercent / 100);
+  const halfShare = this.round2(amountDueBeforeDelivery * 0.5);
+
+  if (this.paymentType === 'advance') {
+    return halfShare;
+  } else {
+    const deliveryFee = this.round2(this.order.totalAmount * (this.deliveryPercent / 100));
+    return this.round2(halfShare + deliveryFee);
   }
+}
+
+private round2(value: number): number {
+  return Math.round(value * 100) / 100;
+}
+
+goBack():void{
+  history.back();
+}
 
   pay(form: NgForm): void {
     if (!form.valid || !this.order) return;
@@ -78,4 +99,35 @@ export class DummyPaymentComponent implements OnInit {
       });
     }, 900);
   }
+
+
+  validateExpiry(expiryInput: any): void {
+  const value = expiryInput.value;
+  if (!value) return;
+
+  // Match the MM/YY format to safely extract month and year
+  const match = value.match(/^(0[1-9]|1[0-2])\/([0-9]{2})$/);
+  
+  if (match) {
+    const inputMonth = parseInt(match[1], 10);
+    const inputYear = parseInt('20' + match[2], 10); // Converts '26' to 2026
+
+    const now = new Date();
+    const currentMonth = now.getMonth() + 1; // JavaScript months are 0-11
+    const currentYear = now.getFullYear();
+
+    // Check if the card's expiration date is in the past
+    if (inputYear < currentYear || (inputYear === currentYear && inputMonth < currentMonth)) {
+      // Merge with existing errors (like pattern or required) and add 'expired'
+      expiryInput.control.setErrors({ ...expiryInput.errors, expired: true });
+    } else {
+      // If valid, remove ONLY the 'expired' error flag
+      if (expiryInput.errors?.['expired']) {
+        const errors = { ...expiryInput.errors };
+        delete errors['expired'];
+        expiryInput.control.setErrors(Object.keys(errors).length ? errors : null);
+      }
+    }
+  }
+}
 }

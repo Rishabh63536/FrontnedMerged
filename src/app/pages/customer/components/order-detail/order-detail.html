@@ -134,12 +134,21 @@
           <div class="alert alert-danger py-2 mt-3 text-center small mb-0 border-0 fw-medium">{{ errorMessage }}</div>
         }
 
+        <!-- Track Order Status Action Button -->
+        <div class="mt-4 pt-1">
+          <a class="btn btn-outline-dark btn-md w-100 py-2.5 fw-bold rounded-3 shadow-sm font-monospace text-uppercase tracking-wider" 
+             style="font-size: 0.85rem;" 
+             [routerLink]="['/customer/orders', order.id, 'status']">
+             Track Real-time Status &rarr;
+          </a>
+        </div>
+
         @if (order.status === 'PENDING'
              || order.status === 'CONFIRMED'
              || order.status === 'ASSIGNED'
              || (order.status === 'IN_TRANSIT' && amountPaid < (order.grandTotal ?? order.totalAmount))
              || order.status === 'DELIVERED') {
-          <div class="mt-4 pt-2">
+          <div class="mt-2">
             @if (order.status === 'PENDING') {
               <a class="btn btn-dark btn-md w-100 py-2.5 fw-bold rounded-3 shadow-sm font-monospace text-uppercase tracking-wider" style="font-size: 0.85rem;" [routerLink]="['/customer/orders', order.id, 'pay', 'advance']">
                 Remit Advance Escrow

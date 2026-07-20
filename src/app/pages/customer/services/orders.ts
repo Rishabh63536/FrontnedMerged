@@ -24,6 +24,10 @@ export class Orders {
     return this.http.get<OrderResponse[]>(`${this.baseUrl}/customer/${customerId}`);
   }
 
+  getOrdersByCustomer(customerId: number): Observable<OrderResponse[]> {
+    return this.http.get<OrderResponse[]>(`${this.baseUrl}/customer/${customerId}`);
+  }
+
   getActiveByCustomer(customerId: number): Observable<OrderResponse[]> {
     return this.http.get<OrderResponse[]>(`${this.baseUrl}/customer/${customerId}/active`);
   }
