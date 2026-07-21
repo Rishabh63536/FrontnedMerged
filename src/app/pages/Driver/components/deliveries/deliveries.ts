@@ -41,9 +41,9 @@ export class DeliveriesComponent implements OnInit {
   private loadOrders(): void {
     this.ordersService.getByDriver(this.driverId).subscribe({
       next: (orders) => {
-        // Only what needs action right now — delivered/cancelled/returned
-        // orders sit in history, not on the working list.
-        this.orders = orders.filter((o) => o.status === 'ASSIGNED' || o.status === 'IN_TRANSIT');
+        this.orders = (orders || []).filter(
+          (o) => o.status === 'ASSIGNED' || o.status === 'IN_TRANSIT'
+        );
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -52,6 +52,21 @@ export class DeliveriesComponent implements OnInit {
         this.cdr.detectChanges();
       },
     });
+  }
+
+  /** Helper to check if customer has completed final payment */
+  isFullyPaid(order: OrderResponse): boolean {
+    return (order.amountPaid ?? 0) >= (order.totalAmount ?? 0);
+  }
+
+  /** Helper to compute remaining balance owed by customer */
+  getRemainingBalance(order: OrderResponse): number {
+    return Math.max(0, (order.totalAmount ?? 0) - (order.amountPaid ?? 0));
+  }
+
+  /** Generates direct Google Maps URL for rapid mobile navigation */
+  getGoogleMapsUrl(address: string): string {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
   }
 
   startDelivery(orderId: number): void {
@@ -95,9 +110,6 @@ export class DeliveriesComponent implements OnInit {
         this.clearSuccessSoon();
       },
       error: (err) => {
-        // Backend's actual error shape is { Message, status } — surfacing the
-        // real reason (e.g. "final payment not yet received") instead of a
-        // generic failure message, since that's genuinely actionable info here.
         this.errorMessage[orderId] = err?.error?.Message || 'Could not complete delivery.';
         this.completingId = null;
         this.cdr.detectChanges();

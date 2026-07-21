@@ -87,7 +87,7 @@
           </div>
 
           <button type="submit" class="btn btn-primary w-100 py-2" [disabled]="payForm.invalid || processing">
-            {{ processing ? 'Processing Payment…' : 'Pay ₹' + displayAmount.toFixed(2) }}
+            {{ processing ? 'Processing Payment…' : 'Pay ₹' + displayAmount.toFixed(2) | currency:"INR" }}
           </button>
         </form>
 

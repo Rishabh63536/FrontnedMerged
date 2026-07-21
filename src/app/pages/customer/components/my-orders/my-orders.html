@@ -6,25 +6,59 @@
     </div>
   </div>
 
-  <div class="bg-white p-2 rounded-3 border d-inline-flex mb-4">
-    <button
-      type="button"
-      class="btn px-4 py-2 fw-semibold border-0 rounded-2 text-nowrap transition-all"
-      [class.btn-primary]="activeTab === 'active'"
-      [class.text-secondary]="activeTab !== 'active'"
-      (click)="activeTab = 'active'"
-    >
-      Active Shipments <span class="badge ms-2" [class.bg-white]="activeTab === 'active'" [class.text-primary]="activeTab === 'active'" [class.bg-light]="activeTab !== 'active'" [class.text-dark]="activeTab !== 'active'">{{ activeOrders.length }}</span>
-    </button>
-    <button
-      type="button"
-      class="btn px-4 py-2 fw-semibold border-0 rounded-2 text-nowrap transition-all"
-      [class.btn-primary]="activeTab === 'past'"
-      [class.text-secondary]="activeTab !== 'past'"
-      (click)="activeTab = 'past'"
-    >
-      Past Archives <span class="badge ms-2" [class.bg-white]="activeTab === 'past'" [class.text-primary]="activeTab === 'past'" [class.bg-light]="activeTab !== 'past'" [class.text-dark]="activeTab !== 'past'">{{ pastOrders.length }}</span>
-    </button>
+  <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-4">
+    
+    <!-- Tab Controls -->
+    <div class="bg-white p-2 rounded-3 border d-inline-flex">
+      <button
+        type="button"
+        class="btn px-4 py-2 fw-semibold border-0 rounded-2 text-nowrap transition-all"
+        [class.btn-primary]="activeTab === 'active'"
+        [class.text-secondary]="activeTab !== 'active'"
+        (click)="setActiveTab('active')"
+      >
+        Active Shipments 
+        <span class="badge ms-2" 
+              [class.bg-white]="activeTab === 'active'" 
+              [class.text-primary]="activeTab === 'active'" 
+              [class.bg-light]="activeTab !== 'active'" 
+              [class.text-dark]="activeTab !== 'active'">
+          {{ activeOrders.length }}
+        </span>
+      </button>
+      <button
+        type="button"
+        class="btn px-4 py-2 fw-semibold border-0 rounded-2 text-nowrap transition-all"
+        [class.btn-primary]="activeTab === 'past'"
+        [class.text-secondary]="activeTab !== 'past'"
+        (click)="setActiveTab('past')"
+      >
+        Past Archives 
+        <span class="badge ms-2" 
+              [class.bg-white]="activeTab === 'past'" 
+              [class.text-primary]="activeTab === 'past'" 
+              [class.bg-light]="activeTab !== 'past'" 
+              [class.text-dark]="activeTab !== 'past'">
+          {{ pastOrders.length }}
+        </span>
+      </button>
+    </div>
+
+    <!-- Filter Dropdown -->
+    <div class="d-flex align-items-center gap-2">
+      <label class="text-muted small fw-bold font-monospace text-uppercase mb-0" style="font-size: 0.7rem;">
+        Filter Status:
+      </label>
+      <select class="form-select form-select-sm font-monospace rounded border-secondary-subtle bg-white px-3 py-1.5 shadow-sm"
+              style="width: 170px; font-size: 0.8rem;"
+              [value]="selectedStatus"
+              (change)="onStatusChange($any($event.target).value)">
+        @for (status of availableStatuses; track status) {
+          <option [value]="status">{{ status }}</option>
+        }
+      </select>
+    </div>
+
   </div>
 
   @if (loading) {
@@ -32,17 +66,24 @@
       <div class="spinner-border text-primary mb-3" style="width: 2.5rem; height: 2.5rem;" role="status"></div>
       <span class="text-secondary fw-medium">Retrieving Manifest Records...</span>
     </div>
-  } @else if (displayedOrders.length === 0) {
+  } @else if (currentTabOrders.length === 0) {
     <div class="card border border-dashed text-center p-5 bg-light rounded-4">
       <div class="card-body">
         <p class="text-muted mb-3 fs-5">
-          @if (activeTab === 'active') {
+          @if (rawTabOrders.length > 0) {
+            No orders found with status "<strong>{{ selectedStatus }}</strong>".
+          } @else if (activeTab === 'active') {
             No active freight distributions right now.
           } @else {
             No archived order histories available.
           }
         </p>
-        @if (activeTab === 'active') {
+        
+        @if (rawTabOrders.length > 0 && selectedStatus !== 'ALL') {
+          <button class="btn btn-outline-secondary px-4 py-2 fw-semibold" (click)="onStatusChange('ALL')">
+            Reset Status Filter
+          </button>
+        } @else if (activeTab === 'active') {
           <a routerLink="/customer" class="btn btn-primary px-4 py-2 fw-semibold">
             Browse Product Inventory
           </a>
@@ -51,7 +92,7 @@
     </div>
   } @else {
     <div class="d-flex flex-column gap-3">
-      @for (order of displayedOrders; track order.id) {
+      @for (order of paginatedOrders; track order.id) {
         <div 
           class="card border border-light-subtle shadow-sm rounded-3 overflow-hidden position-relative btn text-start p-0 lc-card-hover"
           (click)="viewOrder(order.id)"
@@ -79,13 +120,60 @@
               <div class="col-12 col-md-2 d-flex flex-md-column align-items-center align-items-md-end justify-content-between gap-2">
                 <span class="h5 fw-bold text-dark mb-0">₹{{ order.totalAmount }}</span>
                 <span class="badge px-3 py-2 rounded-pill font-monospace shadow-sm" [ngClass]="statusBadgeClass(order.status)">
-                  {{ order.status }}
+                  {{ getStatusDisplay(order.status) }}
                 </span>
               </div>
             </div>
           </div>
         </div>
       }
+    </div>
+
+    <!-- PAGINATION TOOLBAR -->
+    <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between bg-white px-4 py-3 rounded-3 shadow-sm mt-4 border gap-3">
+      <div class="d-flex align-items-center gap-3 text-muted small font-monospace">
+        <div class="d-flex align-items-center gap-2">
+          <span>Per page:</span>
+          <select class="form-select form-select-sm font-monospace rounded border-secondary-subtle bg-light"
+                  style="width: 65px; font-size: 0.75rem;"
+                  [value]="pageSize"
+                  (change)="onPageSizeChange($event)">
+            @for (size of pageSizeOptions; track size) {
+              <option [value]="size">{{ size }}</option>
+            }
+          </select>
+        </div>
+        <span class="border-start ps-3">
+          Showing <strong class="text-dark">{{ startIndex }}</strong>–<strong class="text-dark">{{ endIndex }}</strong> of <strong class="text-dark">{{ currentTabOrders.length }}</strong>
+        </span>
+      </div>
+
+      <div class="d-flex align-items-center gap-1 font-monospace">
+        <button class="btn btn-sm btn-outline-secondary font-monospace text-uppercase me-1"
+                [disabled]="currentPage === 1" 
+                (click)="changePage(currentPage - 1)"
+                style="font-size: 0.75rem;">
+          &larr; Prev
+        </button>
+
+        @for (page of pageNumbers; track page) {
+          <button class="btn btn-sm px-2.5 font-monospace"
+                  [class.btn-primary]="currentPage === page"
+                  [class.btn-outline-secondary]="currentPage !== page"
+                  (click)="changePage(page)"
+                  style="font-size: 0.75rem;">
+            {{ page }}
+          </button>
+        }
+
+        <button class="btn btn-sm btn-primary font-monospace text-uppercase ms-1"
+                [disabled]="currentPage === totalPages" 
+                (click)="changePage(currentPage + 1)"
+                style="font-size: 0.75rem;">
+          Next &rarr;
+        </button>
+      </div>
+
     </div>
   }
 </div>

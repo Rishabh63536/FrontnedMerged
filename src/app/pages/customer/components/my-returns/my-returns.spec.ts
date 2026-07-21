@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { MyReturns } from "./my-returns";
+import { MyReturnsComponent as MyReturns } from "./my-returns";
 
 describe("MyReturns", () => {
   let component: MyReturns;

@@ -52,7 +52,7 @@
                 </h3>
               </div>
               <span class="badge px-3 py-1.5 rounded font-monospace small" [ngClass]="statusBadgeClass(ret.status)">
-                {{ ret.status }}
+                {{ getStatusDisplay(ret.status) }}
               </span>
             </div>
 
@@ -111,26 +111,54 @@
       }
     </div>
 
-    @if (totalPages > 1) {
-      <div class="d-flex align-items-center justify-content-between bg-white px-4 py-3 rounded shadow-sm mt-4 border">
-        <div class="text-muted small font-monospace">
-          Showing page <span class="fw-bold text-dark">{{ currentPage }}</span> of <span class="fw-bold text-dark">{{ totalPages }}</span>
+    <!-- PAGINATION TOOLBAR -->
+    <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between bg-white px-4 py-3 rounded shadow-sm mt-4 border gap-3">
+      
+      <!-- Range Info & Page Size Selector -->
+      <div class="d-flex align-items-center gap-3 text-muted small font-monospace">
+        <div class="d-flex align-items-center gap-2">
+          <span>Per page:</span>
+          <select class="form-select form-select-sm font-monospace rounded border-secondary-subtle bg-light"
+                  style="width: 65px; font-size: 0.75rem;"
+                  [value]="pageSize"
+                  (change)="onPageSizeChange($event)">
+            @for (size of pageSizeOptions; track size) {
+              <option [value]="size">{{ size }}</option>
+            }
+          </select>
         </div>
-        <div class="d-flex gap-2">
-          <button class="btn btn-sm btn-outline-secondary font-monospace tracking-wide text-uppercase"
-                  [disabled]="currentPage === 1" 
-                  (click)="changePage(currentPage - 1)"
-                  style="font-size: 0.75rem;">
-            &larr; Prev
-          </button>
-          <button class="btn btn-sm btn-dark font-monospace tracking-wide text-uppercase"
-                  [disabled]="currentPage === totalPages" 
-                  (click)="changePage(currentPage + 1)"
-                  style="font-size: 0.75rem;">
-            Next &rarr;
-          </button>
-        </div>
+        <span class="border-start ps-3">
+          Showing <strong class="text-dark">{{ startIndex }}</strong>–<strong class="text-dark">{{ endIndex }}</strong> of <strong class="text-dark">{{ filteredReturns.length }}</strong>
+        </span>
       </div>
-    }
+
+      <!-- Page Numbers & Prev/Next Controls -->
+      <div class="d-flex align-items-center gap-1 font-monospace">
+        <button class="btn btn-sm btn-outline-secondary font-monospace tracking-wide text-uppercase me-1"
+                [disabled]="currentPage === 1" 
+                (click)="changePage(currentPage - 1)"
+                style="font-size: 0.75rem;">
+          &larr; Prev
+        </button>
+
+        @for (page of pageNumbers; track page) {
+          <button class="btn btn-sm px-2.5 font-monospace"
+                  [class.btn-dark]="currentPage === page"
+                  [class.btn-outline-secondary]="currentPage !== page"
+                  (click)="changePage(page)"
+                  style="font-size: 0.75rem;">
+            {{ page }}
+          </button>
+        }
+
+        <button class="btn btn-sm btn-dark font-monospace tracking-wide text-uppercase ms-1"
+                [disabled]="currentPage === totalPages" 
+                (click)="changePage(currentPage + 1)"
+                style="font-size: 0.75rem;">
+          Next &rarr;
+        </button>
+      </div>
+
+    </div>
   }
 </div>

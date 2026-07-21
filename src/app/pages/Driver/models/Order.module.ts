@@ -9,7 +9,9 @@ export interface OrderResponse {
   totalAmount: number;
   shippingAddress: string;
   customerId: number;
+  amountPaid?: number;
   customerName: string;
+  customerPhone?: string;
   productId: number;
   productNameSnapshot: string;
   unitPriceSnapshot: number;

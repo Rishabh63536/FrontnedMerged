@@ -22,7 +22,7 @@ export interface OrderResponse {
   totalAmount: number;
   deliveryFee?: number;
   grandTotal?: number;
-  orderAmountPaid?: number;
+  amountPaid?: number;
   shippingAddress: string;
   customerId: number;
   customerName: string;

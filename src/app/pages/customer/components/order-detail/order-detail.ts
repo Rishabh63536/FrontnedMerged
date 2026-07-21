@@ -90,7 +90,7 @@ export class OrderDetailComponent implements OnInit {
 
   get amountPaid(): number {
     // Prefer the backend field if present; fall back to summing payments.
-    if (this.order?.orderAmountPaid !== undefined) return this.order.orderAmountPaid;
+    if (this.order?.amountPaid !== undefined) return this.order.amountPaid;
     return this.payments.reduce((sum, p) => sum + p.amount, 0);
   }
 

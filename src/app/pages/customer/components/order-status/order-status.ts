@@ -108,6 +108,6 @@ export class OrderStatus implements OnInit {
   }
 
   get amountPaid(): number {
-    return this.order?.orderAmountPaid ?? 0;
+    return this.order?.amountPaid ?? 0;
   }
 }

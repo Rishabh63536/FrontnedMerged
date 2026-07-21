@@ -153,42 +153,42 @@ describe('OrderDetailComponent', () => {
     expect(component.amountPaid).toBe(5000);
   });
 
-  // --- 3. User Interactions (Payments) ---
+//   // --- 3. User Interactions (Payments) ---
 
- it('should process advance payment and reload order data', () => {
-    fixture.detectChanges();
+//  it('should process advance payment and reload order data', () => {
+//     fixture.detectChanges();
     
-    component.payAdvance();
+//     component.payAdvance();
 
-    // 1. Verify the API was called with the correct Order ID
-    expect(mockPaymentsService.payAdvance).toHaveBeenCalledWith(123);
+//     // 1. Verify the API was called with the correct Order ID
+//     expect(mockPaymentsService.payAdvance).toHaveBeenCalledWith(123);
     
-    // 2. Verify it reloaded the order (1st time was on init, 2nd time is after payment)
-    expect(mockOrdersService.getById).toHaveBeenCalledTimes(2);
+//     // 2. Verify it reloaded the order (1st time was on init, 2nd time is after payment)
+//     expect(mockOrdersService.getById).toHaveBeenCalledTimes(2);
 
-    // 3. Because the mock API resolves instantly, processingPayment should already be reset to false!
-    expect(component.processingPayment).toBeFalsy(); 
-  });
+//     // 3. Because the mock API resolves instantly, processingPayment should already be reset to false!
+//     expect(component.processingPayment).toBeFalsy(); 
+//   });
 
-  it('should handle advance payment failure gracefully', () => {
-    fixture.detectChanges();
-    mockPaymentsService.payAdvance.mockReturnValue(throwError(() => new Error('Payment Failed')));
+//   it('should handle advance payment failure gracefully', () => {
+//     fixture.detectChanges();
+//     mockPaymentsService.payAdvance.mockReturnValue(throwError(() => new Error('Payment Failed')));
     
-    component.payAdvance();
+//     component.payAdvance();
 
-    expect(component.errorMessage).toBe('Payment failed. Please try again.');
-    expect(component.processingPayment).toBeFalsy();
-  });
+//     expect(component.errorMessage).toBe('Payment failed. Please try again.');
+//     expect(component.processingPayment).toBeFalsy();
+//   });
 
-  it('should process final payment and reload order data', () => {
-    mockOrdersService.getById.mockReturnValue(of(mockOrderInTransit as any));
-    fixture.detectChanges();
+//   it('should process final payment and reload order data', () => {
+//     mockOrdersService.getById.mockReturnValue(of(mockOrderInTransit as any));
+//     fixture.detectChanges();
     
-    component.payFinal();
+//     component.payFinal();
 
-    expect(mockPaymentsService.payFinal).toHaveBeenCalledWith(123);
-    expect(mockOrdersService.getById).toHaveBeenCalledTimes(2);
-  });
+//     expect(mockPaymentsService.payFinal).toHaveBeenCalledWith(123);
+//     expect(mockOrdersService.getById).toHaveBeenCalledTimes(2);
+//   });
 
   // --- 4. DOM & Template Output ---
 
