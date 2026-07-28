@@ -21,9 +21,8 @@ export class LandingPage implements OnInit {
   filteredProducts: ProductDTO[] = [];
   searchQuery: string = '';
 
-  // Pagination Configuration
   currentPage: number = 1;
-  pageSize: number = 6; // Adjust number of items per page here
+  pageSize: number = 6; // nos of items per page
 
   constructor(
     private productService: Products,
@@ -63,11 +62,10 @@ export class LandingPage implements OnInit {
       );
     }
     
-    // Reset back to page 1 whenever filters change
+    //reset back to page 1 whenever filters change
     this.currentPage = 1;
   }
 
-  // Slice item list to show only the items belonging to the active page
   get paginatedProducts(): ProductDTO[] {
     const startIndex = (this.currentPage - 1) * this.pageSize;
     return this.filteredProducts.slice(startIndex, startIndex + this.pageSize);

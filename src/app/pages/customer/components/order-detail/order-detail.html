@@ -113,14 +113,14 @@
                     <tr class="border-bottom-subtle">
                       <td class="ps-0 py-2">
                         <p class="mb-0 fw-semibold text-dark" style="font-size: 0.85rem;">
-                          {{ payment.type === 'ADVANCE' ? 'Initial Milestone Deposit' : 'Final Consignment Settlement' }}
-                        </p>
+                          {{payment.type === 'ADVANCE'? 'Initial Milestone Deposit': payment.type === 'REFUND'? 'Payment Refund': 'Final Consignment Settlement'}}
+</p>
                         <p class="mb-0 text-muted font-monospace text-secondary extra-small" style="font-size: 0.75rem;">
                           {{ payment.paidAt | date: 'short' }}
                         </p>
                       </td>
                       <td class="text-end pe-0 py-2">
-                        <span class="fw-bold text-success font-monospace">{{ payment.amount | currency:'INR':'symbol':'1.2-2' }}</span>
+                        <span class="fw-bold text-success font-monospace">{{ getAbsoluteAmount(payment.amount) | currency:'INR':'symbol':'1.2-2' }}</span>
                       </td>
                     </tr>
                   }

@@ -5,10 +5,6 @@ import { LoginResponse } from '../models/Auth.module';
 import { UserRegistrationRequest, UserRegistrationResponse } from '../models/User.module';
 import { API_BASE_URL } from '../config/api-config';
 
-// Shared across every role module — this is the ONE auth service for the
-// whole unified app. Only the Customer module actually calls register()
-// (self-registration); Admin creates every other role via the same endpoint
-// from its own Create User screen.
 @Injectable({ providedIn: 'root' })
 export class Login {
   private baseUrl: string = `${API_BASE_URL}/users`;
@@ -36,14 +32,11 @@ export class Login {
     return this.getStoredUser() !== null ;
   }
 
-  /** The logged-in user's own role-profile id — customerId/vendorId/driverId/
-   *  warehouseManagerId, whichever applies to their role. Not meaningful for ADMIN. */
   getRoleProfileId(): number | null {
     const user = this.getStoredUser();
     return user ? user.roleProfileId : null;
   }
-
-  /** Only populated for WAREHOUSE_MANAGER — null for every other role. */
+  
   getWarehouseId(): number | null {
     const user = this.getStoredUser();
     return user ? user.warehouseId : null;

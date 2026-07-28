@@ -113,8 +113,12 @@
             </div>
             <div class="col-12">
               <label class="form-label small text-uppercase text-dark fw-semibold" style="letter-spacing: 0.5px;">City Match String</label>
-              <input type="text" name="location" class="form-control rounded-0 border-dark shadow-none py-2" ngModel required placeholder="Bangalore"
-                     title="Must match a warehouse's location string exactly for assignment matching." />
+              <select class="form-select" name="city" ngModel required>
+              <option [ngValue]="undefined" disabled selected>Select a city…</option>
+                @for (city of availableCities; track city) {
+                  <option [value]="city">{{ city }}</option>
+                }
+              </select>
               <div class="form-text small text-muted mt-1" style="font-size: 0.75rem;">Must match a warehouse's Location field exactly (case-insensitive).</div>
             </div>
           }

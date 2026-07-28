@@ -16,8 +16,6 @@ export interface UpdateUserRequest {
   password?: string;
 }
 
-// Shared shape: used by Customer's self-registration form AND Admin's
-// Create User form — both ultimately hit the same POST /users/register.
 export interface UserRegistrationRequest {
   name: string;
   phone: string;

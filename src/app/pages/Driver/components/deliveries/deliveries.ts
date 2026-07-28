@@ -60,14 +60,10 @@ export class DeliveriesComponent implements OnInit {
   }
 
   /** Helper to compute remaining balance owed by customer */
-  getRemainingBalance(order: OrderResponse): number {
-    return Math.max(0, (order.totalAmount ?? 0) - (order.amountPaid ?? 0));
-  }
-
-  /** Generates direct Google Maps URL for rapid mobile navigation */
-  getGoogleMapsUrl(address: string): string {
-    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-  }
+ getRemainingBalance(order: OrderResponse): string {
+  const balance = order.totalAmount - (order.amountPaid ?? 0);
+  return Math.max(0, balance).toFixed(2); 
+}
 
   startDelivery(orderId: number): void {
     this.startingId = orderId;

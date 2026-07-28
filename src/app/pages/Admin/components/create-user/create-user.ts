@@ -4,6 +4,8 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { Users } from '../../services/users';
 import { UserRole } from '../../../../core/models/Auth.module';
 import { UserRegistrationRequest } from '../../../../core/models/User.module';
+import { Warehouses } from '../../services/warehouses';
+import { WarehouseResponse } from '../../models/Warehouse.module';
 
 @Component({
   selector: 'app-create-user',
@@ -12,9 +14,8 @@ import { UserRegistrationRequest } from '../../../../core/models/User.module';
   templateUrl: './create-user.html',
 })
 export class CreateUserComponent {
-  // Admin only ever creates these three — Customers self-register, Admins aren't
-  // created through this UI (seeded/managed separately).
   selectedRole: UserRole = 'WAREHOUSE_MANAGER';
+  availableCities: string[] = [];
 
   submitting = false;
   errorMessage: string | null = null;
@@ -23,7 +24,20 @@ export class CreateUserComponent {
   constructor(
     private usersService: Users,
     private cdr: ChangeDetectorRef,
-  ) {}
+    private warehouseService: Warehouses
+  ) {
+    this.loadCities();
+  }
+
+  private loadCities():void{
+    this.warehouseService.getAll().subscribe({
+      next:(warehouses:WarehouseResponse[])=>{
+        this.availableCities = [...new Set(warehouses.map(w => w.location))];
+        this.cdr.detectChanges();
+      },
+      error:()=>{},
+    })
+  }
 
   setRole(role: UserRole): void {
     this.selectedRole = role;

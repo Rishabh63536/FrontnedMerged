@@ -79,9 +79,6 @@ goBack():void{
     this.processing = true;
     this.errorMessage = null;
 
-    // Brief artificial delay purely for a "processing payment" feel
-    // doesn't affect what's actually charged, that's still computed
-    // entirely server-side the moment the real call below fires.
     setTimeout(() => {
       const call = this.paymentType === 'advance'
         ? this.paymentsService.payAdvance(this.orderId)
@@ -105,23 +102,19 @@ goBack():void{
   const value = expiryInput.value;
   if (!value) return;
 
-  // Match the MM/YY format to safely extract month and year
   const match = value.match(/^(0[1-9]|1[0-2])\/([0-9]{2})$/);
   
   if (match) {
     const inputMonth = parseInt(match[1], 10);
-    const inputYear = parseInt('20' + match[2], 10); // Converts '26' to 2026
+    const inputYear = parseInt('20' + match[2], 10); 
 
     const now = new Date();
-    const currentMonth = now.getMonth() + 1; // JavaScript months are 0-11
+    const currentMonth = now.getMonth() + 1;
     const currentYear = now.getFullYear();
 
-    // Check if the card's expiration date is in the past
     if (inputYear < currentYear || (inputYear === currentYear && inputMonth < currentMonth)) {
-      // Merge with existing errors (like pattern or required) and add 'expired'
       expiryInput.control.setErrors({ ...expiryInput.errors, expired: true });
     } else {
-      // If valid, remove ONLY the 'expired' error flag
       if (expiryInput.errors?.['expired']) {
         const errors = { ...expiryInput.errors };
         delete errors['expired'];

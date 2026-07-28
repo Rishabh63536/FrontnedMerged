@@ -60,7 +60,7 @@
         </h2>
 
         @if (order.status !== 'DELIVERED' && order.status !== 'RETURNED') {
-          <p class="text-secondary mb-0">Not applicable — this order hasn't been delivered yet.</p>
+          <p class="text-secondary mb-0">Not applicable, this order hasn't been delivered yet.</p>
         } @else if (!pod) {
           <p class="text-secondary mb-0">No POD photo on file for this order.</p>
         } @else {

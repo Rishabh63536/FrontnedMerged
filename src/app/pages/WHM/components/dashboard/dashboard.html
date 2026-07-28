@@ -13,7 +13,7 @@
     <header class="mb-4">
       <h1 class="text-primary fw-bold mb-1">Welcome, {{ managerName }}</h1>
       <p class="text-secondary mb-0">
-        Managing <strong>{{ warehouse.warehouseCode }}</strong> — {{ warehouse.location }}
+        Managing <strong>{{ warehouse.warehouseCode }}</strong>- {{ warehouse.location }}
       </p>
     </header>
 
@@ -133,7 +133,7 @@
                         <span class="badge text-primary border border-primary small">Ready to Load</span>
                       </td>
                       <td class="text-end">
-                        <a [routerLink]="['/warehouse-manager/orders', order.id]" class="btn btn-sm btn-outline-primary py-1 px-3">
+                        <a [routerLink]="['/warehouse-manager/orders']" class="btn btn-sm btn-outline-primary py-1 px-3">
                           Assign Driver
                         </a>
                       </td>
@@ -181,7 +181,7 @@
                         {{ (item.maxStock * item.rolPercent) / 100 || item.minimumThreshold || 10 }} units
                       </td>
                       <td class="text-end">
-                        <a [routerLink]="['/warehouse-manager/inventory', item.productId || item.id]" class="btn btn-sm btn-outline-warning py-1 px-3">
+                        <a [routerLink]="['/warehouse-manager/inventory']" class="btn btn-sm btn-outline-warning py-1 px-3">
                           Order
                         </a>
                       </td>

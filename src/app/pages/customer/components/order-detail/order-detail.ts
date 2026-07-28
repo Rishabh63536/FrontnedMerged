@@ -155,6 +155,10 @@ export class OrderDetailComponent implements OnInit {
   });
 }
 
+  getAbsoluteAmount(amount:number): number{
+    return Math.abs(amount);
+  }
+
   get isCancellable(): boolean{
     return this.order?.status === 'PENDING' || this.order?.status  === 'CONFIRMED' || this.order?.status === 'ASSIGNED';
   }

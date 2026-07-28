@@ -23,10 +23,8 @@ export class MyOrdersComponent implements OnInit {
   returnRequests: ReturnRequestResponse[] = [];
   loading = true;
 
-  // Status Filter State
   selectedStatus = 'ALL';
 
-  // Pagination State
   currentPage = 1;
   pageSize = 5;
   pageSizeOptions = [5, 10, 15, 20];
@@ -46,7 +44,6 @@ export class MyOrdersComponent implements OnInit {
       return;
     }
 
-    // Fetch Active Orders, Past Orders, and Return Requests simultaneously
     forkJoin({
       active: this.ordersService.getActiveByCustomer(customerId),
       past: this.ordersService.getPastByCustomer(customerId),
@@ -56,13 +53,11 @@ export class MyOrdersComponent implements OnInit {
         this.activeOrders = active || [];
         this.returnRequests = returns || [];
 
-        // Cross-reference past orders with return requests
        this.pastOrders = (past || []).map((order) => {
   const matchedReturn = this.returnRequests.find((r) => r.orderId === order.id);
   if (matchedReturn) {
     return {
       ...order,
-      // Cast the ReturnStatus to OrderStatus so TypeScript allows the UI override
       status: matchedReturn.status as unknown as OrderStatus, 
     };
   }
@@ -79,7 +74,7 @@ export class MyOrdersComponent implements OnInit {
     });
   }
 
-  /** Unified status display label generator for OrderStatus & ReturnStatus */
+  //status display for labels
   getStatusDisplay(status: string): string {
     if (!status) return '';
     const upper = status.toUpperCase();
